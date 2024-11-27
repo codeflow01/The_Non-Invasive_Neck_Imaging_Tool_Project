@@ -9,10 +9,12 @@ import * as MediaLibrary from "expo-media-library";
 import { shareAsync } from "expo-sharing";
 import { useState, useEffect, useRef } from "react";
 import { useEvent } from "expo";
-
 import { SafeAreaView } from "react-native-safe-area-context";
+
 import { Button, Text, TouchableOpacity, View } from "react-native";
 import * as FileSystem from "expo-file-system";
+
+type VideoQuality = "2160p" | "1080p" | "720p";
 
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
@@ -25,6 +27,7 @@ export default function App() {
   const [facing, setFacing] = useState<"front" | "back">("front");
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
   const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [videoQuality, setVideoQuality] = useState<VideoQuality>("1080p");
 
   const [cameraPermissionRes, requestCameraPermission] = useCameraPermissions();
   const [micPermissionRes, requestMicPermission] = useMicrophonePermissions();
@@ -39,6 +42,8 @@ export default function App() {
 
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
+
+  
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -90,16 +95,6 @@ export default function App() {
     };
   }, [isRecording]);
 
-  //   useEffect(() => {
-  //     if (videoUri) {
-  //       console.log("(∆π∆) Current video URI:", videoUri);
-  //     }
-  //   }, [videoUri]);
-
-  //   useEffect(() => {
-  //     console.log("(∆π∆) Camera ref current value:", cameraRef.current);
-  //   }, [cameraRef.current]);
-
   if (cameraPermissionRes === undefined) {
     return <Text>Requesting camera permission...</Text>;
   } else if (!hasCameraPermission) {
@@ -124,6 +119,21 @@ export default function App() {
 
   const toggleFlash = () => {
     setFlashMode((current) => (current === "off" ? "on" : "off"));
+  };
+
+  const toggleVideoQuality = () => {
+    setVideoQuality((current) => {
+      switch (current) {
+        case "2160p":
+          return "1080p";
+        case "1080p":
+          return "720p";
+        case "720p":
+          return "2160p";
+        default:
+          return "1080p";
+      }
+    });
   };
 
   // let recordVideo = async () => {
@@ -162,7 +172,7 @@ export default function App() {
     setIsRecording(true);
 
     let options = {
-      maxDuration: 20,
+      maxDuration: 5,
       codec: "avc1",
     };
 
@@ -236,7 +246,7 @@ export default function App() {
     //   };
 
     return (
-      <SafeAreaView className="flex-1 justify-center">
+      <SafeAreaView className="flex-1">
         <VideoView
           style={{ flex: 1 }}
           player={player}
@@ -265,41 +275,23 @@ export default function App() {
     );
   }
 
-  //   const CameraComponent = forwardRef(({ facing }, ref) => {
-  //     const [isActive, setIsActive] = useState(true)
-  //     useEffect(() => {
-  //       // When component mounts, ensure camera is active
-  //       setIsActive(true);
-  //       // Cleanup when component unmounts
-  //       return () => {
-  //         if (cameraRef.current) {
-  //           setIsActive(false);
-  //         }
-  //       };
-  //     }, []);
-  //     if (!isActive) return null;
-  //     return (
-  //       <CameraView
-  //         style={{ flex: 1 }}
-  //         facing={facing}
-  //         ref={ref}
-  //         mode="video"
-  //       />)
-  // });
-
   return (
     <View className="flex-1">
-      <View className="h-5/6 w-full">
+      <View className="h-3/6 w-full">
         <CameraView
           style={{ flex: 1 }}
           facing={facing}
           ref={cameraRef}
           mode="video"
           enableTorch={flashMode === "on"}
+          videoQuality={videoQuality}
+          videoStabilizationMode="auto"
+          // autofocus
+          // zoom={zoom}
         />
 
         {isRecording && (
-          <View className="absolute top-10 w-full items-center">
+          <View className="absolute top-20 w-full items-center">
             <View className="bg-black/50 px-4 py-1 rounded-lg">
               <Text className="text-white font-medium text-lg">
                 {formatTime(elapsedTime)}
@@ -332,6 +324,15 @@ export default function App() {
         >
           <Text className="text-red-700 font-semibold text-lg">
             {facing === "front" ? "Back Camera" : "Front Camera"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="bg-gray-400 px-6 py-3 mb-1 ml-36 mr-36 rounded-lg items-center"
+          onPress={toggleVideoQuality}
+        >
+          <Text className="text-red-700 font-semibold text-lg">
+            Quality: {videoQuality}
           </Text>
         </TouchableOpacity>
 
