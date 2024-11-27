@@ -3,6 +3,7 @@ import {
   useCameraPermissions,
   useMicrophonePermissions,
   FlashMode,
+  FocusMode
 } from "expo-camera";
 import { VideoView, useVideoPlayer } from "expo-video";
 import * as MediaLibrary from "expo-media-library";
@@ -29,7 +30,11 @@ export default function App() {
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [videoQuality, setVideoQuality] = useState<VideoQuality>("1080p");
-  const [stabilizationMode, setStabilizationMode] = useState<VideoStabilization>("auto");
+  const [stabilizationMode, setStabilizationMode] =
+    useState<VideoStabilization>("auto");
+  const [isMuted, setIsMuted] = useState<boolean>(true);
+  const [isAutofocusEnabled, setIsAutofocusEnabled] = useState<FocusMode>("off");
+
 
   const [cameraPermissionRes, requestCameraPermission] = useCameraPermissions();
   const [micPermissionRes, requestMicPermission] = useMicrophonePermissions();
@@ -44,8 +49,6 @@ export default function App() {
 
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
-
-  
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -153,6 +156,14 @@ export default function App() {
           return "auto";
       }
     });
+  };
+
+  const toggleMute = () => {
+    setIsMuted((current) => !current);
+  };
+
+  const toggleAutofocus = () => {
+    setIsAutofocusEnabled((current) => current === "off" ? "on" : "off");
   };
 
 
@@ -290,7 +301,7 @@ export default function App() {
         {/* {hasMediaLibPermission ? (
           <Button title="Save" onPress={saveVideo} />
         ) : undefined} */}
-        <Button title="Record" onPress={recordAgain} />
+        <Button title="Camera" onPress={recordAgain} />
       </SafeAreaView>
     );
   }
@@ -300,13 +311,15 @@ export default function App() {
       <View className="h-3/6 w-full">
         <CameraView
           style={{ flex: 1 }}
-          facing={facing}
           ref={cameraRef}
           mode="video"
-          enableTorch={flashMode === "on"}
+          facing={facing}
           videoQuality={videoQuality}
-          videoStabilizationMode={stabilizationMode}
-          // autofocus
+          enableTorch={flashMode === "on"}
+          mute={isMuted}
+          videoStabilizationMode={stabilizationMode}          
+          autofocus={isAutofocusEnabled}
+          
           // zoom={zoom}
         />
 
@@ -343,7 +356,7 @@ export default function App() {
           onPress={toggleCameraFacing}
         >
           <Text className="text-red-700 font-semibold text-lg">
-            {facing === "front" ? "Back Camera" : "Front Camera"}
+            CAMERA: {facing === "front" ? "BACK" : "FRONT"}
           </Text>
         </TouchableOpacity>
 
@@ -352,7 +365,7 @@ export default function App() {
           onPress={toggleVideoQuality}
         >
           <Text className="text-red-700 font-semibold text-lg">
-            Quality: {videoQuality}
+            QUALITY: {videoQuality.toUpperCase()}
           </Text>
         </TouchableOpacity>
 
@@ -361,7 +374,16 @@ export default function App() {
           onPress={toggleFlash}
         >
           <Text className="text-red-700 font-semibold text-lg">
-            Flash: {flashMode === "off" ? "off" : "on"}
+            FLASH: {flashMode === "off" ? "OFF" : "ON"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
+          onPress={toggleMute}
+        >
+          <Text className="text-red-700 font-semibold text-lg">
+            MUTE: {isMuted ? "OFF" : "ON"}
           </Text>
         </TouchableOpacity>
 
@@ -370,7 +392,16 @@ export default function App() {
           onPress={toggleStabilization}
         >
           <Text className="text-red-700 font-semibold text-lg">
-            Stabilization: {stabilizationMode.toUpperCase()}
+            STABILIZATION: {stabilizationMode.toUpperCase()}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
+          onPress={toggleAutofocus}
+        >
+          <Text className="text-red-700 font-semibold text-lg">
+            AUTO FOCUS: {isAutofocusEnabled ? "ON" : "OFF"}
           </Text>
         </TouchableOpacity>
 
@@ -378,8 +409,8 @@ export default function App() {
           className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
           onPress={isRecording ? stopRecording : recordVideo}
         >
-          <Text className="text-red-700 font-semibold text-lg">
-            {isRecording ? "Stop Recording" : "Record Video"}
+          <Text className="text-zinc-50 font-semibold text-lg">
+            {isRecording ? "STOP RECORDING" : "RECORD VIDEO"}
           </Text>
         </TouchableOpacity>
       </View>
