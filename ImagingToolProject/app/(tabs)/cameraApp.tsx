@@ -33,6 +33,8 @@ export default function App() {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
 
+  const [countDown, setCountDown] = useState<number>(20);
+
   const player = useVideoPlayer(videoUri || "", (player) => {
     if (player) {
       player.loop = true;
@@ -134,7 +136,7 @@ export default function App() {
     setIsRecording(true);
 
     let options = {
-      maxDuration: 5,
+      maxDuration: 20,
       codec: "avc1",
     };
 
@@ -160,14 +162,10 @@ export default function App() {
     console.log("(∆π∆) URI:", videoUri);
 
     let shareVideo = () => {
-      shareAsync(videoUri).then(() => {
-        setTimeout(() => {
-          setVideoUri(undefined);
-        }, 300);
-      });
+      shareAsync(videoUri);
     };
 
-    let discardVideo = () => {
+    let recordAgain = () => {
       setTimeout(() => {
         setVideoUri(undefined);
       }, 300);
@@ -236,7 +234,7 @@ export default function App() {
         {/* {hasMediaLibPermission ? (
           <Button title="Save" onPress={saveVideo} />
         ) : undefined} */}
-        <Button title="Discard" onPress={discardVideo} />
+        <Button title="Record" onPress={recordAgain} />
       </SafeAreaView>
     );
   }
@@ -274,6 +272,17 @@ export default function App() {
           enableTorch={flashMode === "on"}
         />
       </View>
+
+      {/* <TouchableOpacity
+          className="bg-gray-400 px-6 py-3 mt-1 mb-1 ml-36 mr-36 rounded-lg items-center"
+          onPress={toggleCameraFacing}
+        >
+          <Text className="text-red-700 font-semibold text-lg">
+            {facing === "front" ? "Back Camera" : "Front Camera"}
+          </Text>
+        </TouchableOpacity>
+        
+        </CameraView> */}
 
       {/* <View className="flex-1 justify-center items-end">
         <Button
