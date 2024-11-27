@@ -29,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="featureTBD"
         options={{
-          title: "Plackholder",
+          title: "Placeholder",
           headerShown: false,
           tabBarIcon: () => (
             <IconButton icon="liquid-spot" iconColor={MD3Colors.error30} />

@@ -14,10 +14,17 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button, Text, TouchableOpacity, View } from "react-native";
 import * as FileSystem from "expo-file-system";
 
+const formatTime = (seconds: number): string => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
+
 export default function App() {
   let cameraRef = useRef<CameraView>(null);
   const [facing, setFacing] = useState<"front" | "back">("front");
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
 
   const [cameraPermissionRes, requestCameraPermission] = useCameraPermissions();
   const [micPermissionRes, requestMicPermission] = useMicrophonePermissions();
@@ -33,7 +40,7 @@ export default function App() {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
 
-  const [countDown, setCountDown] = useState<number>(20);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const player = useVideoPlayer(videoUri || "", (player) => {
     if (player) {
@@ -63,6 +70,25 @@ export default function App() {
       });
     })();
   }, []);
+
+  useEffect(() => {
+    if (isRecording) {
+      timerRef.current = setInterval(() => {
+        setElapsedTime((time) => time + 1);
+      }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+      setElapsedTime(0);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [isRecording]);
 
   //   useEffect(() => {
   //     if (videoUri) {
@@ -271,6 +297,16 @@ export default function App() {
           mode="video"
           enableTorch={flashMode === "on"}
         />
+
+        {isRecording && (
+          <View className="absolute top-10 w-full items-center">
+            <View className="bg-black/50 px-4 py-1 rounded-lg">
+              <Text className="text-white font-medium text-lg">
+                {formatTime(elapsedTime)}
+              </Text>
+            </View>
+          </View>
+        )}
       </View>
 
       {/* <TouchableOpacity
