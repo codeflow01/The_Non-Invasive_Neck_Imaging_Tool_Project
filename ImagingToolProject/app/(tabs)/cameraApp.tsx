@@ -15,6 +15,7 @@ import { Button, Text, TouchableOpacity, View } from "react-native";
 import * as FileSystem from "expo-file-system";
 
 type VideoQuality = "2160p" | "1080p" | "720p";
+type VideoStabilization = "off" | "standard" | "cinematic" | "auto";
 
 const formatTime = (seconds: number): string => {
   const mins = Math.floor(seconds / 60);
@@ -28,6 +29,7 @@ export default function App() {
   const [flashMode, setFlashMode] = useState<FlashMode>("off");
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [videoQuality, setVideoQuality] = useState<VideoQuality>("1080p");
+  const [stabilizationMode, setStabilizationMode] = useState<VideoStabilization>("auto");
 
   const [cameraPermissionRes, requestCameraPermission] = useCameraPermissions();
   const [micPermissionRes, requestMicPermission] = useMicrophonePermissions();
@@ -135,6 +137,24 @@ export default function App() {
       }
     });
   };
+
+  const toggleStabilization = () => {
+    setStabilizationMode((current) => {
+      switch (current) {
+        case "auto":
+          return "off";
+        case "off":
+          return "standard";
+        case "standard":
+          return "cinematic";
+        case "cinematic":
+          return "auto";
+        default:
+          return "auto";
+      }
+    });
+  };
+
 
   // let recordVideo = async () => {
 
@@ -285,7 +305,7 @@ export default function App() {
           mode="video"
           enableTorch={flashMode === "on"}
           videoQuality={videoQuality}
-          videoStabilizationMode="auto"
+          videoStabilizationMode={stabilizationMode}
           // autofocus
           // zoom={zoom}
         />
@@ -319,7 +339,7 @@ export default function App() {
         /> */}
       <View className="">
         <TouchableOpacity
-          className="bg-gray-400 px-6 py-3 mt-1 mb-1 ml-36 mr-36 rounded-lg items-center"
+          className="bg-gray-400 px-6 py-3 mt-1 mb-1 ml-28 mr-28 rounded-lg items-center"
           onPress={toggleCameraFacing}
         >
           <Text className="text-red-700 font-semibold text-lg">
@@ -328,7 +348,7 @@ export default function App() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="bg-gray-400 px-6 py-3 mb-1 ml-36 mr-36 rounded-lg items-center"
+          className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
           onPress={toggleVideoQuality}
         >
           <Text className="text-red-700 font-semibold text-lg">
@@ -337,7 +357,7 @@ export default function App() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="bg-gray-400 px-6 py-3 mb-1 ml-36 mr-36 rounded-lg items-center"
+          className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
           onPress={toggleFlash}
         >
           <Text className="text-red-700 font-semibold text-lg">
@@ -346,7 +366,16 @@ export default function App() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          className="bg-gray-400 px-6 py-3 mb-1 ml-36 mr-36 rounded-lg items-center"
+          className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
+          onPress={toggleStabilization}
+        >
+          <Text className="text-red-700 font-semibold text-lg">
+            Stabilization: {stabilizationMode.toUpperCase()}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
           onPress={isRecording ? stopRecording : recordVideo}
         >
           <Text className="text-red-700 font-semibold text-lg">
