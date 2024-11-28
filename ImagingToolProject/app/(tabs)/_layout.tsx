@@ -18,10 +18,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="cameraApp"
         options={{
-          title: "Camera",
+          title: "Demo",
           headerShown: false,
           tabBarIcon: () => (
-            <IconButton icon="camera" iconColor={MD3Colors.error30} />
+            <IconButton icon="projector-screen-outline" iconColor={MD3Colors.error30} />
           ),
         }}
       />
@@ -29,10 +29,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="featureTBD"
         options={{
-          title: "Lab_Layout",
+          title: "Camera",
           headerShown: false,
           tabBarIcon: () => (
-            <IconButton icon="liquid-spot" iconColor={MD3Colors.error30} />
+            <IconButton icon="camera" iconColor={MD3Colors.error30} />
           ),
         }}
       />
