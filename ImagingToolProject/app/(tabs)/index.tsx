@@ -10,7 +10,7 @@ export default function Index() {
       <TouchableOpacity onPress={() => setIsPressed(!isPressed)}>
         <Text
           className={`font-bold ${
-            isPressed ? "text-blue-600" : "text-red-700"
+            isPressed ? "text-[#8389ff]" : "text-[#001e57]"
           } ${isPressed ? "text-4xl" : "text-2xl"}`}
         >
           {isPressed ? "GOOD LUCK!" : "NECK IMAGE PROJECT"}

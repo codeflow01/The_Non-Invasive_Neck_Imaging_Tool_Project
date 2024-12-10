@@ -425,7 +425,7 @@ export default function FeatureModal() {
             className="bg-gray-400 px-6 py-3 mt-1 mb-1 ml-28 mr-28 rounded-lg items-center"
             onPress={toggleCameraFacing}
           >
-            <Text className="text-red-700 font-semibold text-lg">
+            <Text className="text-[#001e57] font-semibold text-lg">
               CAMERA: {facing === "front" ? "FRONT" : "BACK"}
             </Text>
           </TouchableOpacity>
@@ -434,7 +434,7 @@ export default function FeatureModal() {
             className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
             onPress={toggleVideoQuality}
           >
-            <Text className="text-red-700 font-semibold text-lg">
+            <Text className="text-[#001e57] font-semibold text-lg">
               QUALITY: {videoQuality.toUpperCase()}
             </Text>
           </TouchableOpacity>
@@ -443,7 +443,7 @@ export default function FeatureModal() {
             className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
             onPress={toggleFlash}
           >
-            <Text className="text-red-700 font-semibold text-lg">
+            <Text className="text-[#001e57] font-semibold text-lg">
               FLASH: {flashMode === "off" ? "OFF" : "ON"}
             </Text>
           </TouchableOpacity>
@@ -452,7 +452,7 @@ export default function FeatureModal() {
             className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
             onPress={toggleMute}
           >
-            <Text className="text-red-700 font-semibold text-lg">
+            <Text className="text-[#001e57] font-semibold text-lg">
               MUTE: {isMuted ? "ON" : "OFF"}
             </Text>
           </TouchableOpacity>
@@ -461,7 +461,7 @@ export default function FeatureModal() {
             className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
             onPress={toggleStabilization}
           >
-            <Text className="text-red-700 font-semibold text-lg">
+            <Text className="text-[#001e57] font-semibold text-lg">
               STABILIZATION: {stabilizationMode.toUpperCase()}
             </Text>
           </TouchableOpacity>
@@ -470,7 +470,7 @@ export default function FeatureModal() {
             className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
             onPress={toggleAutofocus}
           >
-            <Text className="text-red-700 font-semibold text-lg">
+            <Text className="text-[#001e57] font-semibold text-lg">
               AUTO FOCUS: {isAutofocusEnabled === "off" ? "OFF" : "ON"}
             </Text>
           </TouchableOpacity>
