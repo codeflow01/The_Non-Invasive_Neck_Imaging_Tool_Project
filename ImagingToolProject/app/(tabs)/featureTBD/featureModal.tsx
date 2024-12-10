@@ -40,7 +40,7 @@ const formatTime = (seconds: number): string => {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-// digital zoom
+// optical zoom range 0-0.2
 const ZoomSlider = ({
   value,
   onValueChange,
@@ -48,7 +48,8 @@ const ZoomSlider = ({
   value: number;
   onValueChange: (value: number) => void;
 }) => {
-  const translateX = useSharedValue(value * 300);
+  const MAX_ZOOM = 0.2;
+  const translateX = useSharedValue((value / MAX_ZOOM) * 300);
 
   const gestureHandler = useAnimatedGestureHandler({
     onStart: (_, context: any) => {
@@ -58,7 +59,7 @@ const ZoomSlider = ({
       let newValue = context.startX + event.translationX;
       newValue = Math.max(0, Math.min(newValue, 300));
       translateX.value = newValue;
-      runOnJS(onValueChange)(newValue / 300);
+      runOnJS(onValueChange)((newValue / 300) * MAX_ZOOM);
     },
     onEnd: () => {
       translateX.value = withSpring(translateX.value);
@@ -81,7 +82,7 @@ const ZoomSlider = ({
         </PanGestureHandler>
       </View>
       <Text className="text-white text-center mt-1">
-        {`${Math.round(value * 100)}%`}
+        {`${Math.round((value / MAX_ZOOM) * 100)}%`}
       </Text>
     </View>
   );

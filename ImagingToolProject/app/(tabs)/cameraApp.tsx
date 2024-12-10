@@ -37,7 +37,7 @@ const formatTime = (seconds: number): string => {
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-// digital zoom
+// optical zoom range 0-0.2
 const ZoomSlider = ({
   value,
   onValueChange,
