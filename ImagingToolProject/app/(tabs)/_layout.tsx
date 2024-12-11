@@ -16,23 +16,12 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="cameraApp"
+        name="imaging"
         options={{
-          title: "Demo",
+          title: "Imaging",
           headerShown: false,
           tabBarIcon: () => (
-            <FontAwesome5 name="apple-alt" size={24} color="#001e57" />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
-        name="featureTBD"
-        options={{
-          title: "Camera",
-          headerShown: false,
-          tabBarIcon: () => (
-            <FontAwesome5 name="camera" size={24} color="#001e57" />
+            <FontAwesome5 name="cloudsmith" size={24} color="#001e57" />
           ),
         }}
       />
@@ -40,10 +29,21 @@ export default function TabLayout() {
       <Tabs.Screen
         name="beta"
         options={{
-          title: "API",
+          title: "Test_Beta",
           headerShown: false,
           tabBarIcon: () => (
-            <FontAwesome5 name="bullseye" size={24} color="#001e57" />
+            <FontAwesome5 name="connectdevelop" size={24} color="#001e57" />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="gamma"
+        options={{
+          title: "Test_Gamma",
+          headerShown: false,
+          tabBarIcon: () => (
+            <FontAwesome5 name="connectdevelop" size={24} color="#001e57" />
           ),
         }}
       />

@@ -23,10 +23,10 @@ export default function Beta() {
       <TouchableOpacity onPress={() => setIsPressed(!isPressed)}>
         <Text
           className={`font-bold ${
-            isPressed ? "text-[#8389ff]" : "text-[#001e57]"
-          } ${isPressed ? "text-4xl" : "text-2xl"}`}
+            isPressed ? "text-red-700" : "text-[#001e57]"
+          } ${isPressed ? "text-2xl" : "text-2xl"}`}
         >
-          {isPressed ? "GOOD LUCK!" : "NECK IMAGE PROJECT API"}
+          {isPressed ? "GOOD LUCK!" : "API Test"}
         </Text>
       </TouchableOpacity>
 

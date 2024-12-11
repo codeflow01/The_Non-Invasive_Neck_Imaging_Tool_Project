@@ -85,7 +85,7 @@ const ZoomSlider = ({
   );
 };
 
-export default function App() {
+export default function Gamma() {
   let cameraRef = useRef<CameraView>(null);
   const [facing, setFacing] = useState<"front" | "back">("front");
   const [elapsedTime, setElapsedTime] = useState<number>(0);

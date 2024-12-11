@@ -1,6 +1,3 @@
-
-import { router } from 'expo-router';
-
 import {
   VideoQuality,
   FlashMode,
@@ -88,8 +85,7 @@ const ZoomSlider = ({
   );
 };
 
-export default function FeatureModal() {
-
+export default function Camera() {
   let cameraRef = useRef<CameraView>(null);
   const [facing, setFacing] = useState<"front" | "back">("front");
   const [elapsedTime, setElapsedTime] = useState<number>(0);
@@ -489,15 +485,10 @@ export default function FeatureModal() {
   );
 }
 
-
-
-
-
-  
 //   return (
 //     <View>
 //       <Text>Modal Content</Text>
-//       {/* <Button 
+//       {/* <Button
 //         onPress={() => router.back()}
 //         title="Close Modal"
 //       /> */}
