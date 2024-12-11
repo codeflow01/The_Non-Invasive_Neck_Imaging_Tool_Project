@@ -1,15 +1,19 @@
 import { View, Text } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function Beta() {
   const [isPressed, setIsPressed] = useState<boolean>(false);
+  const queryClient = useQueryClient();
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["apiMessage"],
     queryFn: async () => {
-      const response = await fetch("http://192.168.1.19:8000/api");
+      // Home
+      // const response = await fetch("http://192.168.1.19:8000/api");
+      // ABI
+      const response = await fetch("http://172.23.127.183:8000/api");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -18,27 +22,37 @@ export default function Beta() {
     enabled: isPressed,
   });
 
+  const handlePress = () => {
+    if (isPressed) {
+      queryClient.removeQueries({ queryKey: ["apiMessage"] });
+    } else {
+      refetch();
+    }
+    setIsPressed(!isPressed);
+  };
+
   return (
     <View className="flex-1 items-center justify-center">
-      <TouchableOpacity onPress={() => setIsPressed(!isPressed)}>
+      <TouchableOpacity onPress={handlePress}>
         <Text
-          className={`font-bold ${
+          className={`font-bold bg-neutral-300 p-2 rounded-lg shadow-sm ${
             isPressed ? "text-red-700" : "text-[#001e57]"
           } ${isPressed ? "text-2xl" : "text-2xl"}`}
         >
-          {isPressed ? "GOOD LUCK!" : "API Test"}
+          {isPressed ? "PRESS TO TEST AGAIN" : "PRESS TO REST API CONNECTION"}
         </Text>
       </TouchableOpacity>
-
-      {isLoading && <Text className="mt-20">Loading...</Text>}
+      {isLoading && (
+        <Text className="mt-20 text-red-700 text-2xl">Loading...</Text>
+      )}
       {error && (
-        <Text className="mt-40 text-red-700">
+        <Text className="mt-20 text-red-700 text-2xl">
           Error: {error instanceof Error ? error.message : "Unknown error"}
         </Text>
       )}
       {data && (
-        <Text className="mt-40 text-red-700 font-semibold text-2xl">
-          Server says: {data.message}
+        <Text className="mt-20 text-[#001e57] text-2xl">
+          RESTAPI says: {data.message}
         </Text>
       )}
     </View>

@@ -9,7 +9,7 @@ export default function Index() {
     <View className="flex-1 items-center justify-center">
       <TouchableOpacity onPress={() => setIsPressed(!isPressed)}>
         <Text
-          className={`font-bold ${
+          className={`font-bold bg-neutral-300 p-2 rounded-lg shadow-sm ${
             isPressed ? "text-red-700" : "text-[#001e57]"
           } ${isPressed ? "text-2xl" : "text-2xl"}`}
         >

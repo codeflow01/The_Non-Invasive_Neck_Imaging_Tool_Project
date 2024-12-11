@@ -39,3 +39,6 @@ app-example
 
 server-fastapi-temporary/
 server-fastapi-temporary/*
+
+frontend-generated/
+frontend-generated/*

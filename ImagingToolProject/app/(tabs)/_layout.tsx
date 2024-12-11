@@ -29,7 +29,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="beta"
         options={{
-          title: "Test_Beta",
+          title: "Python_Server",
           headerShown: false,
           tabBarIcon: () => (
             <FontAwesome5 name="connectdevelop" size={24} color="#001e57" />
