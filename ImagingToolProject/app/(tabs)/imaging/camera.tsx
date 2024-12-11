@@ -264,7 +264,7 @@ export default function Camera() {
     setIsRecording(true);
 
     let options: CameraRecordingOptions = {
-      maxDuration: 5,
+      maxDuration: 10,
       codec: "avc1",
     };
 
