@@ -13,7 +13,7 @@ export default function Index() {
             isPressed ? "text-red-700" : "text-[#001e57]"
           } ${isPressed ? "text-2xl" : "text-2xl"}`}
         >
-          {isPressed ? "GOOD LUCK!" : "NECK IMAGE PROJECT"}
+          {isPressed ? "Good Luck!" : "Neck Image Project"}
         </Text>
       </TouchableOpacity>
     </View>

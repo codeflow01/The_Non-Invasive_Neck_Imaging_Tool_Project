@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from diagnosis_cardiac import video_cardiac_analyze
 from fastapi.staticfiles import StaticFiles
+import os
 
 
 app = FastAPI()
@@ -23,8 +24,16 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount the static files directory
-app.mount("/server-fastapi-temporary", StaticFiles(directory="server-fastapi-temporary"), name="static")
+current_dir = os.path.dirname(os.path.abspath(__file__))
+static_dir = os.path.join(current_dir, "server-fastapi-temporary")
+
+print(f"(∆π∆)Static directory path: {static_dir}")
+print(f"(∆π∆)Static directory exists: {os.path.exists(static_dir)}")
+if os.path.exists(static_dir):
+    print(f"(∆π∆)Static directory contents: {os.listdir(static_dir)}")
+
+# Mount the existing static directory
+app.mount("/server-fastapi-temporary", StaticFiles(directory=static_dir), name="static")
 
 
 @app.get("/")
@@ -45,7 +54,7 @@ async def diagnose_cardiac():
 # For REST API Testing
 @router.get("/api")
 async def api_endpoint():
-    return {"message": "Server launched!"}
+    return {"message": "Connected"}
 
 app.include_router(router)
 

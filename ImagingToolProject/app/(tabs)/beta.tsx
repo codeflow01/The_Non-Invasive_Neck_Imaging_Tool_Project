@@ -35,11 +35,13 @@ export default function Beta() {
     <View className="flex-1 items-center justify-center">
       <TouchableOpacity onPress={handlePress}>
         <Text
-          className={`font-bold bg-neutral-300 p-2 rounded-lg shadow-sm ${
+          className={`font-bold bg-neutral-300 p-2 rounded-lg shadow-sm text-center ${
             isPressed ? "text-red-700" : "text-[#001e57]"
           } ${isPressed ? "text-2xl" : "text-2xl"}`}
         >
-          {isPressed ? "PRESS TO TEST AGAIN" : "PRESS TO REST API CONNECTION"}
+          {isPressed
+            ? "Press To Test Again"
+            : "Press to Test\n REST API Connection"}
         </Text>
       </TouchableOpacity>
       {isLoading && (
@@ -51,8 +53,8 @@ export default function Beta() {
         </Text>
       )}
       {data && (
-        <Text className="mt-20 text-[#001e57] text-2xl">
-          RESTAPI says: {data.message}
+        <Text className="mt-20 text-[#001e57] text-2xl text-center">
+          *REST API Status* {"\n"} {data.message}
         </Text>
       )}
     </View>

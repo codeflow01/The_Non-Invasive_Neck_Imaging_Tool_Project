@@ -87,8 +87,9 @@ def get_absolute_paths() -> Tuple[Path, Path]:
     return input_folder, output_folder
 
 def _process_video_sync(input_folder: Path, output_folder: Path) -> bool:
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+
+    print(f"(∆π∆)Input folder: {input_folder}")
+    print(f"(∆π∆)Output folder: {output_folder}")
 
     video_files = [f for f in os.listdir(input_folder) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
     if not video_files:

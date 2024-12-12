@@ -16,7 +16,7 @@ const Gamma = () => {
   // const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
   const SERVER_URL = "http://172.23.127.183:8000";
-  const VIDEO_NAME = "1080P_10sec.mov";
+  const VIDEO_NAME = "1080P_10sec";
 
   const diagnosisMutation = useMutation({
     mutationFn: async () => {
@@ -81,7 +81,7 @@ const Gamma = () => {
       )}
 
       {plotQuery.isSuccess && plotQuery.data && (
-        <View className="mt-20 aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden">
+        <View className="aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden">
           <Image
             source={{ uri: plotQuery.data }}
             className="w-full h-full"
