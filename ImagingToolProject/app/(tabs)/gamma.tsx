@@ -81,12 +81,17 @@ const Gamma = () => {
       )}
 
       {plotQuery.isSuccess && plotQuery.data && (
-        <View className="aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden">
-          <Image
-            source={{ uri: plotQuery.data }}
-            className="w-full h-full"
-            resizeMode="contain"
-          />
+        <View>
+          <Text className="mt-20 mb-4 text-[#001e57] text-center text-lg">
+            CSV exported successfully.
+          </Text>
+          <View className="aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden">
+            <Image
+              source={{ uri: plotQuery.data }}
+              className="w-full h-full"
+              resizeMode="contain"
+            />
+          </View>
         </View>
       )}
     </View>
