@@ -1,9 +1,10 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from diagnosis_cardiac import video_cardiac_analyze
+from diagnosis_cardiac import video_cardiac_analyze, get_absolute_paths
 from fastapi.staticfiles import StaticFiles
 import os
+from pathlib import Path
 
 
 app = FastAPI()
@@ -44,8 +45,27 @@ async def root():
 @router.get("/diagnosis/cardiac")
 async def diagnose_cardiac():
     try:
+        input_folder, _ = get_absolute_paths()
+        print(f"(∆π∆)Input folder path: {input_folder}")
+
+        if not os.path.exists(input_folder):
+            print(f"(∆π∆)Input folder does not exist: {input_folder}")
+            return {"success": False, "message": "Input folder not found"}
+   
+        video_files = [f for f in os.listdir(input_folder) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        if not video_files:
+            return {"success": False, "message": "No video files found"}
+        
+        if not video_files:
+            return {"success": False, "message": "No video files found"}
+            
+        video_name = Path(video_files[0]).stem
         success = await video_cardiac_analyze()
-        return {"success": success}
+        
+        return {
+            "success": success,
+            "videoName": video_name
+        }
     except Exception as e:
         print(f"Error in diagnosis endpoint: {e}")
         return {"success": False}

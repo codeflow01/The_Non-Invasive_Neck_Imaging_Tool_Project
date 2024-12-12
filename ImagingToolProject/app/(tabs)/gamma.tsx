@@ -9,6 +9,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 
 interface DiagnosisResponse {
   success: boolean;
+  videoName?: string;
 }
 
 const Gamma = () => {
@@ -16,7 +17,7 @@ const Gamma = () => {
   // const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
   const SERVER_URL = "http://172.23.127.183:8000";
-  const VIDEO_NAME = "1080P_10sec";
+  // const VIDEO_NAME = "1080P_10sec";
 
   const diagnosisMutation = useMutation({
     mutationFn: async () => {
@@ -31,12 +32,14 @@ const Gamma = () => {
   const plotQuery = useQuery({
     queryKey: ["plot", diagnosisMutation.data?.success],
     queryFn: async () => {
-      if (!diagnosisMutation.data?.success) {
+      if (
+        !diagnosisMutation.data?.success ||
+        !diagnosisMutation.data?.videoName
+      ) {
         return null;
       }
-
       const timestamp = Date.now();
-      return `${SERVER_URL}/server-fastapi-temporary/${VIDEO_NAME}_intensity_plot.png?t=${timestamp}`;
+      return `${SERVER_URL}/server-fastapi-temporary/${diagnosisMutation.data.videoName}_intensity_plot.png?t=${timestamp}`;
     },
     enabled: diagnosisMutation.isSuccess && diagnosisMutation.data.success,
   });
