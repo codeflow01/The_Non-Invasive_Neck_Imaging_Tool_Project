@@ -11,9 +11,9 @@ export default function Beta() {
     queryKey: ["apiMessage"],
     queryFn: async () => {
       // Home
-      // const response = await fetch("http://192.168.1.19:8000/api");
+      const response = await fetch("http://192.168.1.19:8000/api");
       // ABI
-      const response = await fetch("http://172.23.127.183:8000/api");
+      // const response = await fetch("http://172.23.127.183:8000/api");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

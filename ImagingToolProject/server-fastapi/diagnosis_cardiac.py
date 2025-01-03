@@ -8,6 +8,9 @@ from pathlib import Path
 from typing import Tuple, List
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from multiprocessing import cpu_count
+import pandas as pd
+from ABI_subpixel import register_images
 
 # AGG backend is for writing to file, not for rendering in a window
 matplotlib.use('Agg')

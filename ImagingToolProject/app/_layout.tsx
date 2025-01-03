@@ -20,16 +20,16 @@ export default function RootLayout() {
   return (
     <QueryClientProvider client={queryClient}>
       <TamaguiProvider config={tamaguiConfig} defaultTheme={colorScheme!}>
-        <ThemeProvider
+        {/* <ThemeProvider
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          {/* <PaperProvider> */}
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="+not-found" />
-          </Stack>
-          {/* </PaperProvider> */}
-        </ThemeProvider>
+        > */}
+        {/* <PaperProvider> */}
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+        {/* </PaperProvider> */}
+        {/* </ThemeProvider> */}
       </TamaguiProvider>
     </QueryClientProvider>
   );
