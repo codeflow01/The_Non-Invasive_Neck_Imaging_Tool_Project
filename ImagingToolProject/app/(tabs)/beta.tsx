@@ -54,7 +54,7 @@ export default function Beta() {
       )}
       {data && (
         <Text className="mt-20 text-[#001e57] text-2xl text-center">
-          *REST API Status* {"\n"} {data.message}
+          REST API Status: {data.message}
         </Text>
       )}
     </View>

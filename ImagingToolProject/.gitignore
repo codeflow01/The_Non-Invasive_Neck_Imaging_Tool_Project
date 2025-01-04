@@ -37,8 +37,11 @@ yarn-error.*
 
 app-example
 
-server-fastapi-temporary/
-server-fastapi-temporary/*
+server-fastapi-storage1/
+server-fastapi-storage1/*
 
-frontend-generated/
-frontend-generated/*
+server-fastapi-storage2/
+server-fastapi-storage2/*
+
+frontend-storage/
+frontend-storage/*
