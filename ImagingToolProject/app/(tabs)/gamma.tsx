@@ -7,13 +7,20 @@ import {
 } from "react-native";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
+interface DiagnosisResults {
+  displacement_plot: string;
+  registration_data: string;
+}
+
 interface DiagnosisResponse {
   success: boolean;
   videoName?: string;
+  results?: DiagnosisResults;
+  message?: string;
 }
 
 const Gamma = () => {
-  // Home
+  // VIC
   const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
   // const SERVER_URL = "http://172.23.127.183:8000";
@@ -34,12 +41,12 @@ const Gamma = () => {
     queryFn: async () => {
       if (
         !diagnosisMutation.data?.success ||
-        !diagnosisMutation.data?.videoName
+        !diagnosisMutation.data?.results
       ) {
         return null;
       }
       const timestamp = Date.now();
-      return `${SERVER_URL}/server-fastapi-temporary/${diagnosisMutation.data.videoName}_intensity_plot.png?t=${timestamp}`;
+      return `${SERVER_URL}${diagnosisMutation.data.results.displacement_plot}?t=${timestamp}`;
     },
     enabled: diagnosisMutation.isSuccess && diagnosisMutation.data.success,
   });
@@ -79,14 +86,15 @@ const Gamma = () => {
 
       {diagnosisMutation.isSuccess && !diagnosisMutation.data.success && (
         <Text className="mt-20 text-red-500 text-center">
-          Video processing failed. Please try again.
+          {diagnosisMutation.data.message ||
+            "Video processing failed. Please try again."}
         </Text>
       )}
 
       {plotQuery.isSuccess && plotQuery.data && (
         <View>
           <Text className="mt-20 mb-4 text-[#001e57] text-center text-lg">
-            CSV exported successfully.
+            Analysis completed successfully.
           </Text>
           <View className="aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden">
             <Image
@@ -95,6 +103,11 @@ const Gamma = () => {
               resizeMode="contain"
             />
           </View>
+          {diagnosisMutation.data?.results?.registration_data && (
+            <Text className="mt-4 text-center text-gray-600">
+              CSV file exported successfully.
+            </Text>
+          )}
         </View>
       )}
     </View>
