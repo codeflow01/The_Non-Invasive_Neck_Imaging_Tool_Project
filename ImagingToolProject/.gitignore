@@ -37,11 +37,11 @@ yarn-error.*
 
 app-example
 
-server-fastapi-storage1/
-server-fastapi-storage1/*
+server-fastapi-frames-storage/
+server-fastapi-frames-storage/*
 
-server-fastapi-storage2/
-server-fastapi-storage2/*
+server-fastapi-results-storage/
+server-fastapi-results-storage/*
 
 frontend-storage/
 frontend-storage/*

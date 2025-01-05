@@ -26,7 +26,7 @@ app.add_middleware(
 )
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
-static_dir = os.path.join(current_dir, "server-fastapi-temporary")
+static_dir = os.path.join(current_dir, "server-fastapi-results-storage")
 
 print(f"(∆π∆)Static directory path: {static_dir}")
 print(f"(∆π∆)Static directory exists: {os.path.exists(static_dir)}")
@@ -34,7 +34,7 @@ if os.path.exists(static_dir):
     print(f"(∆π∆)Static directory contents: {os.listdir(static_dir)}")
 
 # Mount the existing static directory
-app.mount("/server-fastapi-temporary", StaticFiles(directory=static_dir), name="static")
+app.mount("/server-fastapi-results-storage", StaticFiles(directory=static_dir), name="static")
 
 
 @app.get("/")
