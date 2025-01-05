@@ -53,17 +53,22 @@ async def root():
 @router.get("/diagnosis/cardiac")
 async def diagnose_cardiac():
     try:
+        input_folder_path = os.path.join(parent_dir, "frontend-storage")
         print(f"(∆π∆) Checking input folder: {input_folder_path}")
         if not os.path.exists(input_folder_path):
             print(f"(∆π∆) Input folder does not exist: {input_folder_path}")
             return {"success": False, "message": "Input folder not found"}
    
-        video_files = [f for f in os.listdir(input_folder) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        video_files = [f for f in os.listdir(input_folder_path) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
         if not video_files:
             return {"success": False, "message": "No video files found"}
             
         video_name = Path(video_files[0]).stem
-        success = await video_cardiac_analyze()
+        success = await video_cardiac_analyze(
+            input_path=input_folder_path,
+            frames_path=frames_storage,
+            results_path=results_storage
+        )
         
         if success:
             # Check if output files were generated
@@ -80,8 +85,8 @@ async def diagnose_cardiac():
                 "success": True,
                 "videoName": video_name,
                 "results": {
-                    "displacement_plot": "/server-fastapi-storage2/total_displacement_plot.png",
-                    "registration_data": "/server-fastapi-storage2/registration_results.csv"
+                    "displacement_plot": "/server-fastapi-results-storage/total_displacement_plot.png",
+                    "registration_data": "/server-fastapi-results-storage/registration_results.csv"
                 }
             }
         else:

@@ -157,31 +157,31 @@ class DataVisualization:
             print(f"Error creating displacement plot: {e}")
             return False
 
-async def process_video_sync(input_folder: Path, frames_storage: Path, results_storage: Path) -> bool:
-    print(f"(∆π∆)Input folder: {input_folder}")
-    print(f"(∆π∆)Frames storage: {frames_storage}")
-    print(f"(∆π∆)Results storage: {results_storage}")
-
-    video_files = [f for f in os.listdir(input_folder) 
-                  if f.lower().endswith(('.mp4', '.avi', '.mov'))]
-    if not video_files:
-        raise ValueError(f"No video files found in {input_folder}")
-
-    video_path = os.path.join(input_folder, video_files[0])
-    video_name = Path(video_files[0]).stem
+async def process_video_sync(input_folder_path: str, frames_storage_path: str, results_storage_path: str) -> bool:
+    print(f"(∆π∆)Input folder: {input_folder_path}")
+    print(f"(∆π∆)Frames storage: {frames_storage_path}")
+    print(f"(∆π∆)Results storage: {results_storage_path}")
 
     try:
+        video_files = [f for f in os.listdir(input_folder_path) 
+                      if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        if not video_files:
+            raise ValueError(f"No video files found in {input_folder_path}")
+
+        video_path = os.path.join(input_folder_path, video_files[0])
+        video_name = Path(video_files[0]).stem
+
         # Decompose video into frames
         processor = VideoProcess(video_path)
         processor.load_video()
-        frames = processor.extract_frames(str(frames_storage))
+        frames = processor.extract_frames(frames_storage_path)
 
         # Image registration
         analyzer = ImageRegistration(frames)
-        analyzer.register_frames(str(frames_storage), str(results_storage))
+        analyzer.register_frames(frames_storage_path, results_storage_path)
 
         # Visualize results
-        visualizer = DataVisualization(str(results_storage))
+        visualizer = DataVisualization(results_storage_path)
         
         if visualizer.load_data():
             visualizer.plot_displacements()
@@ -192,19 +192,10 @@ async def process_video_sync(input_folder: Path, frames_storage: Path, results_s
         return False
 
 
-async def video_cardiac_analyze() -> bool:
-    input_folder = Path("frontend-generated")
-    frames_storage = Path("server-fastapi-frames-storage")
-    results_storage = Path("server-fastapi-frames-storage")
-    
-    # Run CPU-intensive video processing in a thread pool
-    loop = asyncio.get_event_loop()
-    with ThreadPoolExecutor() as pool:
-        result = await loop.run_in_executor(
-            pool, 
-            process_video_sync, 
-            input_folder, 
-            frames_storage, 
-            results_storage
-        )
-    return result
+async def video_cardiac_analyze(input_path: str, frames_path: str, results_path: str) -> bool:
+    try:
+        result = await process_video_sync(input_path, frames_path, results_path)
+        return result
+    except Exception as e:
+        print(f"Error in video cardiac analyze: {e}")
+        return False
