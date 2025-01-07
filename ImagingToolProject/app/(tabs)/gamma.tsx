@@ -21,9 +21,9 @@ interface DiagnosisResponse {
 
 const Gamma = () => {
   // VIC
-  const SERVER_URL = "http://192.168.1.19:8000";
+  // const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
-  // const SERVER_URL = "http://172.23.127.183:8000";
+  const SERVER_URL = "http://172.23.96.207:8000";
   // const VIDEO_NAME = "1080P_10sec";
 
   const diagnosisMutation = useMutation({

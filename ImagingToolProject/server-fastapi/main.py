@@ -18,7 +18,7 @@ app.add_middleware(
         # VIC
         "http://192.168.1.19:8081",
         # ABI
-        "http://172.23.127.183:8081"
+        "http://172.23.96.207:8081"
         ],
     allow_credentials=True,
     allow_methods=["*"],
