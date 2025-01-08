@@ -5,30 +5,27 @@ import React from "react";
 
 export default function Imaging() {
   return (
-    <View className="flex-1 justify-center">
+    <View className="flex-1 flex-row justify-center items-center">
       <TouchableOpacity onPress={() => router.push("/(tabs)/imaging/camera")}>
         <View className="items-center">
-          <FontAwesome5 name="video" size={50} color="black" />
+          <FontAwesome5 name="video" size={30} color="black" />
         </View>
         <View className="items-center">
-          <Text className="font-bold text-2xl text-red-700 mt-5">
+          <Text className="font-bold text-xl text-red-700 mt-5">
             Press to Record Video
           </Text>
           {/* <Text className="font-bold text-1xl text-red-700">(30FPS)</Text> */}
         </View>
       </TouchableOpacity>
 
-      <>
-        <View className="m-5"></View>
-      </>
+      <View className="m-2"></View>
 
-      {/* <TouchableOpacity onPress={() => router.push("/(tabs)/imaging/picker")}> */}
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => router.push("/(tabs)/imaging/picker")}>
         <View className="items-center">
-          <FontAwesome5 name="photo-video" size={50} color="black" />
+          <FontAwesome5 name="file-video" size={30} color="black" />
         </View>
         <View className="items-center">
-          <Text className="font-bold text-2xl text-red-700 mt-5">
+          <Text className="font-bold text-xl text-red-700 mt-5">
             Press to Upload Video
           </Text>
         </View>

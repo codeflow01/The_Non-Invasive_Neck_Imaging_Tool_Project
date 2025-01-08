@@ -72,7 +72,7 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="gamma"
+        name="insight"
         options={{
           title: "Insight",
           headerShown: false,

@@ -19,7 +19,7 @@ interface DiagnosisResponse {
   message?: string;
 }
 
-const Gamma = () => {
+const Insight = () => {
   // VIC
   // const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
@@ -114,4 +114,4 @@ const Gamma = () => {
   );
 };
 
-export default Gamma;
+export default Insight;
