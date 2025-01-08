@@ -11,6 +11,13 @@ export default function FeatureLayout() {
           headerTitle: "Record Video",
         }}
       />
+      <Stack.Screen
+        name="picker"
+        options={{
+          presentation: "modal",
+          headerTitle: "Upload Video",
+        }}
+      />
     </Stack>
   );
 }
