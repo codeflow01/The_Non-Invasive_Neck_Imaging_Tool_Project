@@ -5,10 +5,6 @@ import { Dimensions } from "react-native";
 export default function TabLayout() {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
-  const horizontalPadding = screenWidth * 0.08;
-  const bottomPadding = screenHeight * 0.04;
-  const tabBarHeight = screenHeight * 0.08;
-  const tabBarWidth = screenWidth * 0.85;
 
   return (
     <Tabs
@@ -16,26 +12,26 @@ export default function TabLayout() {
         tabBarActiveTintColor: "#001e57",
         tabBarInactiveTintColor: "#9E9E9E",
         tabBarStyle: {
-          height: tabBarHeight,
-          width: tabBarWidth,
+          height: screenHeight * 0.08,
+          width: screenWidth * 0.85,
           paddingBottom: screenHeight * 0.01,
           paddingTop: screenHeight * 0.01,
           backgroundColor: "white",
           position: "relative",
-          bottom: bottomPadding,
+          bottom: screenHeight * 0.04,
           alignSelf: "center",
           justifyContent: "center",
           alignItems: "center",
           borderRadius: screenWidth * 0.04,
           borderTopWidth: 0,
           elevation: 3,
-          shadowColor: "#000",
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.1,
-          shadowRadius: 3,
+          // shadowColor: "#000",
+          // shadowOffset: {
+          //   width: 0,
+          //   height: 2,
+          // },
+          // shadowOpacity: 0.1,
+          // shadowRadius: 3,
         },
         tabBarLabelStyle: {
           fontSize: screenWidth * 0.03,
@@ -47,15 +43,13 @@ export default function TabLayout() {
         },
       }}
     >
-      {/* <Tabs screenOptions={{ tabBarActiveTintColor: "#001e57" }}> */}
-
       <Tabs.Screen
         name="index"
         options={{
           title: "Formula",
           headerShown: false,
-          tabBarIcon: ({color}) => (
-            <FontAwesome5 name="ello" size={24} color={color} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="watchman-monitoring" size={24} color={color} />
           ),
         }}
       />
@@ -65,7 +59,7 @@ export default function TabLayout() {
         options={{
           title: "Vision",
           headerShown: false,
-          tabBarIcon: ({color}) => (
+          tabBarIcon: ({ color }) => (
             <FontAwesome5 name="cloudsmith" size={24} color={color} />
           ),
         }}
@@ -76,8 +70,8 @@ export default function TabLayout() {
         options={{
           title: "Insight",
           headerShown: false,
-          tabBarIcon: ({color}) => (
-            <FontAwesome5 name="chart-line" size={24} color={color} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="hubspot" size={24} color={color} />
           ),
         }}
       />
@@ -93,6 +87,26 @@ export default function TabLayout() {
         }}
       /> */}
 
+      <Tabs.Screen
+        name="bmiCal"
+        options={{
+          title: "BMI",
+          headerShown: false,
+          tabBarIcon: ({ color }) => (
+            <FontAwesome5 name="calculator" size={24} color={color} />
+          ),
+        }}
+      />
+
     </Tabs>
   );
+}
+
+{
+  /* hubspot
+      cloudsmith
+      laptop-medical
+      hand-holding-medical
+      ello
+      */
 }
