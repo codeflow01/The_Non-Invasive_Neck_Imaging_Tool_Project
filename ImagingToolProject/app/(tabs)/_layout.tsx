@@ -54,8 +54,8 @@ export default function TabLayout() {
         options={{
           title: "Formula",
           headerShown: false,
-          tabBarIcon: () => (
-            <FontAwesome5 name="ello" size={24} color="#001e57" />
+          tabBarIcon: ({color}) => (
+            <FontAwesome5 name="ello" size={24} color={color} />
           ),
         }}
       />
@@ -65,8 +65,8 @@ export default function TabLayout() {
         options={{
           title: "Vision",
           headerShown: false,
-          tabBarIcon: () => (
-            <FontAwesome5 name="cloudsmith" size={24} color="#001e57" />
+          tabBarIcon: ({color}) => (
+            <FontAwesome5 name="cloudsmith" size={24} color={color} />
           ),
         }}
       />
@@ -76,8 +76,8 @@ export default function TabLayout() {
         options={{
           title: "Insight",
           headerShown: false,
-          tabBarIcon: () => (
-            <FontAwesome5 name="chart-line" size={24} color="#001e57" />
+          tabBarIcon: ({color}) => (
+            <FontAwesome5 name="chart-line" size={24} color={color} />
           ),
         }}
       />
@@ -87,8 +87,8 @@ export default function TabLayout() {
         options={{
           title: "Python_Server",
           headerShown: false,
-          tabBarIcon: () => (
-            <FontAwesome5 name="connectdevelop" size={24} color="#001e57" />
+          tabBarIcon: ({color}) => (
+            <FontAwesome5 name="connectdevelop" size={24} color={color} />
           ),
         }}
       /> */}
