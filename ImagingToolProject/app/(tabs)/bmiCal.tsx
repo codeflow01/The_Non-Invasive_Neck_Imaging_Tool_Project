@@ -115,7 +115,7 @@ export default function BMICalculator() {
 
           <TouchableOpacity
             onPress={calculateBMI}
-            className="items-center bg-[#001e57] rounded-lg"
+            className="items-center bg-[#001e57] rounded-lg shadow-lg"
             style={{ padding: screenWidth * 0.04, marginBottom: screenHeight * 0.02 }}
           >
             <Text

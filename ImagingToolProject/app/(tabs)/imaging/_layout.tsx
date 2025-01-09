@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 
-export default function FeatureLayout() {
+export default function VisionLayout() {
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -8,14 +8,14 @@ export default function FeatureLayout() {
         name="camera"
         options={{
           presentation: "modal",
-          headerTitle: "Record Video",
+          headerTitle: "Capture Video",
         }}
       />
       <Stack.Screen
         name="picker"
         options={{
           presentation: "modal",
-          headerTitle: "Upload Video",
+          headerTitle: "Instant Diagnosis",
         }}
       />
     </Stack>

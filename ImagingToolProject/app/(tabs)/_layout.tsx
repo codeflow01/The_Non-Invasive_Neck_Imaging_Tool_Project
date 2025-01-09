@@ -57,7 +57,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="imaging"
         options={{
-          title: "Vision",
+          title: "Diagnosis",
           headerShown: false,
           tabBarIcon: ({ color }) => (
             <FontAwesome5 name="cloudsmith" size={24} color={color} />
