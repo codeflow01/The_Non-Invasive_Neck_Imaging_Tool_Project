@@ -4,6 +4,8 @@ import {
   Text,
   Image,
   ActivityIndicator,
+  ScrollView,
+  Dimensions,
 } from "react-native";
 import { useQuery, useMutation } from "@tanstack/react-query";
 
@@ -20,6 +22,10 @@ interface DiagnosisResponse {
 }
 
 const Insight = () => {
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
+  const containerWidth = screenWidth * 0.85;
+
   // VIC
   // const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
@@ -56,61 +62,136 @@ const Insight = () => {
   };
 
   return (
-    <View className="flex-1 justify-center">
-      <TouchableOpacity
-        className={`ml-20 mr-20 p-3 rounded-lg items-center ${
-          diagnosisMutation.isPending
-            ? "bg-[#001e57]"
-            : "bg-[#001e57] active:bg-blue-600"
-        }`}
-        onPress={handlePress}
-        disabled={diagnosisMutation.isPending}
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <View
+        className="flex-1 items-center justify-center bg-gray-100"
+        style={{ padding: screenWidth * 0.08 }}
       >
-        <Text className="text-white font-semibold text-lg">
-          {diagnosisMutation.isPending ? "Processing..." : "Start Diagnosis"}
-        </Text>
-      </TouchableOpacity>
-
-      {diagnosisMutation.isPending && (
-        <View className="mt-20 items-center">
-          <ActivityIndicator size="large" color="#3B82F6" />
-          <Text className="mt-2 text-gray-600">Processing video...</Text>
-        </View>
-      )}
-
-      {diagnosisMutation.isError && (
-        <Text className="mt-20 text-red-500 text-center">
-          Error: {diagnosisMutation.error.message}
-        </Text>
-      )}
-
-      {diagnosisMutation.isSuccess && !diagnosisMutation.data.success && (
-        <Text className="mt-20 text-red-500 text-center">
-          {diagnosisMutation.data.message ||
-            "Video processing failed. Please try again."}
-        </Text>
-      )}
-
-      {plotQuery.isSuccess && plotQuery.data && (
-        <View>
-          <Text className="mt-20 mb-4 text-[#001e57] text-center text-lg">
-            Analysis completed successfully.
+        <View
+          className="bg-white rounded-xl"
+          style={{
+            width: containerWidth,
+            padding: screenWidth * 0.05,
+          }}
+        >
+          <Text
+            className="font-bold text-center text-[#001e57]"
+            style={{
+              fontSize: screenWidth * 0.06,
+              marginBottom: screenHeight * 0.02,
+            }}
+          >
+            Test UI
           </Text>
-          <View className="aspect-[16/9] bg-gray-100 rounded-lg overflow-hidden">
-            <Image
-              source={{ uri: plotQuery.data }}
-              className="w-full h-full"
-              resizeMode="contain"
-            />
-          </View>
-          {diagnosisMutation.data?.results?.registration_data && (
-            <Text className="mt-4 text-center text-gray-600">
-              CSV file exported successfully.
+
+          <TouchableOpacity
+            className={`items-center rounded-lg shadow-lg ${
+              diagnosisMutation.isPending ? "bg-gray-400" : "bg-[#001e57]"
+            }`}
+            style={{
+              padding: screenWidth * 0.04,
+              marginBottom: screenHeight * 0.02,
+            }}
+            onPress={handlePress}
+            disabled={diagnosisMutation.isPending}
+          >
+            <Text
+              className="text-white font-semibold"
+              style={{
+                fontSize: screenWidth * 0.04,
+              }}
+            >
+              {diagnosisMutation.isPending
+                ? "Processing..."
+                : "Start Diagnosis"}
+            </Text>
+          </TouchableOpacity>
+
+          {diagnosisMutation.isPending && (
+            <View
+              className="items-center"
+              style={{ marginTop: screenHeight * 0.02 }}
+            >
+              <ActivityIndicator size="large" color="#3B82F6" />
+              <Text
+                className="text-gray-600"
+                style={{
+                  fontSize: screenWidth * 0.04,
+                  marginTop: screenHeight * 0.01,
+                }}
+              >
+                Processing video...
+              </Text>
+            </View>
+          )}
+
+          {diagnosisMutation.isError && (
+            <Text
+              className="text-red-500 text-center"
+              style={{
+                fontSize: screenWidth * 0.04,
+                marginTop: screenHeight * 0.02,
+              }}
+            >
+              Error: {diagnosisMutation.error.message}
             </Text>
           )}
+
+          {diagnosisMutation.isSuccess && !diagnosisMutation.data.success && (
+            <Text
+              className="text-red-500 text-center"
+              style={{
+                fontSize: screenWidth * 0.04,
+                marginTop: screenHeight * 0.02,
+              }}
+            >
+              {diagnosisMutation.data.message ||
+                "Video processing failed. Please try again."}
+            </Text>
+          )}
+
+          {plotQuery.isSuccess && plotQuery.data && (
+            <View>
+              <Text
+                className="text-[#001e57] text-center"
+                style={{
+                  fontSize: screenWidth * 0.045,
+                  marginTop: screenHeight * 0.02,
+                  marginBottom: screenHeight * 0.02,
+                }}
+              >
+                Analysis completed successfully.
+              </Text>
+
+              <View
+                className="bg-gray-100 rounded-lg overflow-hidden"
+                style={{
+                  aspectRatio: 16 / 9,
+                  marginBottom: screenHeight * 0.02,
+                }}
+              >
+                <Image
+                  source={{ uri: plotQuery.data }}
+                  className="w-full h-full"
+                  resizeMode="contain"
+                />
+              </View>
+
+              {diagnosisMutation.data?.results?.registration_data && (
+                <Text
+                  className="text-gray-600 text-center"
+                  style={{
+                    fontSize: screenWidth * 0.035,
+                  }}
+                >
+                  CSV file exported successfully.
+                </Text>
+              )}
+            </View>
+          )}
         </View>
-      )}
-    </View>
+      </View>
+    </ScrollView>
   );
 };
 
