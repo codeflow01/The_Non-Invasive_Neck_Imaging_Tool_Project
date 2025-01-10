@@ -5,7 +5,13 @@ from diagnosis_cardiac import video_cardiac_analyze
 from fastapi.staticfiles import StaticFiles
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
+
+load_dotenv()
+HOST = os.getenv("HOST", "0.0.0.0")
+PORT = int(os.getenv("PORT", "8000"))
+ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:8081").split(",")
 
 app = FastAPI()
 router = APIRouter()
@@ -13,13 +19,7 @@ router = APIRouter()
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:8081",
-        # VIC
-        "http://192.168.1.19:8081",
-        # ABI
-        "http://172.23.96.207:8081"
-        ],
+    allow_origins=ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
