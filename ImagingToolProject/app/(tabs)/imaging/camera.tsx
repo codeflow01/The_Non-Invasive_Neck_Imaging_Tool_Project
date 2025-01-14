@@ -16,7 +16,6 @@ import { useEvent } from "expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import Animated, {
-  useAnimatedGestureHandler,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
@@ -24,8 +23,9 @@ import Animated, {
 } from "react-native-reanimated";
 
 import {
-  PanGestureHandler,
   GestureHandlerRootView,
+  Gesture,
+  GestureDetector,
 } from "react-native-gesture-handler";
 
 import { Button, Text, TouchableOpacity, View } from "react-native";
@@ -38,30 +38,34 @@ const formatTime = (seconds: number): string => {
 };
 
 // optical zoom range 0-0.2
-const ZoomSlider = ({
-  value,
-  onValueChange,
-}: {
+const MAX_ZOOM = 0.2;
+const SLIDER_WIDTH = 300;
+
+interface ZoomSliderProps {
   value: number;
   onValueChange: (value: number) => void;
-}) => {
-  const MAX_ZOOM = 0.2;
-  const translateX = useSharedValue((value / MAX_ZOOM) * 300);
+}
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: (_, context: any) => {
-      context.startX = translateX.value;
-    },
-    onActive: (event, context) => {
-      let newValue = context.startX + event.translationX;
-      newValue = Math.max(0, Math.min(newValue, 300));
+const ZoomSlider = ({ value, onValueChange }: ZoomSliderProps) => {
+  const translateX = useSharedValue((value / MAX_ZOOM) * SLIDER_WIDTH);
+  const contextX = useSharedValue(0);
+
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      contextX.value = translateX.value;
+    })
+    .onUpdate((event) => {
+      let newValue = contextX.value + event.translationX;
+
+      newValue = Math.max(0, Math.min(newValue, SLIDER_WIDTH));
       translateX.value = newValue;
-      runOnJS(onValueChange)((newValue / 300) * MAX_ZOOM);
-    },
-    onEnd: () => {
+
+      const zoomValue = (newValue / SLIDER_WIDTH) * MAX_ZOOM;
+      runOnJS(onValueChange)(zoomValue);
+    })
+    .onEnd(() => {
       translateX.value = withSpring(translateX.value);
-    },
-  });
+    });
 
   const sliderStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
@@ -71,12 +75,12 @@ const ZoomSlider = ({
     <View className="absolute bottom-4 left-20 right-20">
       <View className="h-8 justify-center">
         <View className="h-0.5 bg-white rounded-full" />
-        <PanGestureHandler onGestureEvent={gestureHandler}>
+        <GestureDetector gesture={panGesture}>
           <Animated.View
             className="absolute w-6 h-6 bg-red-700 rounded-full -ml-3"
             style={sliderStyle}
           />
-        </PanGestureHandler>
+        </GestureDetector>
       </View>
       <Text className="text-white text-center mt-1">
         {`${Math.round((value / MAX_ZOOM) * 100)}%`}
@@ -200,7 +204,7 @@ export default function Camera() {
   };
 
   const toggleFlash = () => {
-    setFlashMode((current) => (current === "off" ? "on" : "off"));
+    setFlashMode((current) => (current === "on" ? "off" : "on"));
   };
 
   const toggleMute = () => {
