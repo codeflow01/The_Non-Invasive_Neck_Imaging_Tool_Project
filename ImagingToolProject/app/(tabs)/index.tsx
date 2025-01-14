@@ -21,7 +21,9 @@ export default function Index() {
     queryKey: ["apiMessage"],
     queryFn: async () => {
       // ABI
-      const response = await fetch("http://172.23.96.207:8000/api");
+      // const response = await fetch("http://172.23.96.207:8000/api");
+      // VIC
+      const response = await fetch("http://192.168.1.19:8000/api");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

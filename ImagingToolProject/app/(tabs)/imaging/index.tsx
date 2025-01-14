@@ -44,6 +44,11 @@ export default function Imaging() {
             <TouchableOpacity
               onPress={() => router.push("/(tabs)/imaging/camera")}
               className="items-center bg-[#001e57] rounded-xl shadow-lg w-full py-6"
+              style={{
+                height: screenHeight * 0.15,
+                justifyContent: "center",
+                paddingVertical: screenHeight * 0.02,
+              }}
             >
               <FontAwesome5
                 name="video"
@@ -66,6 +71,11 @@ export default function Imaging() {
             <TouchableOpacity
               onPress={() => router.push("/(tabs)/imaging/picker")}
               className="items-center bg-[#001e57] rounded-xl shadow-lg w-full py-6"
+              style={{
+                height: screenHeight * 0.15,
+                justifyContent: "center",
+                paddingVertical: screenHeight * 0.02,
+              }}
             >
               <FontAwesome5
                 name="cloud"
