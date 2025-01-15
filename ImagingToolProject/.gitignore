@@ -43,5 +43,8 @@ server-fastapi-frames-storage/*
 server-fastapi-results-storage/
 server-fastapi-results-storage/*
 
+server-fastapi-video-storage/
+server-fastapi-results-storage/*
+
 frontend-storage/
 frontend-storage/*
