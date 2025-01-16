@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions, Modal } from "react-native";
 import React, { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -11,18 +11,18 @@ import { useMutation } from "@tanstack/react-query";
 interface UploadResponse {
   success: boolean;
   message: string;
-  filename?: string;
-  path?: string;
+  filename: string;
+  path: string;
 }
 
 interface DiagnosisResponse {
   success: boolean;
-  videoName?: string;
-  results?: {
+  videoName: string;
+  results: {
     displacement_plot: string;
     registration_data: string;
   };
-  message?: string;
+  message: string;
 }
 
 interface VideoUpload {
@@ -40,8 +40,12 @@ export default function Picker() {
   // ABI
   // const SERVER_URL = "http://172.23.96.207:8000";
 
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [showCompletionModal, setShowCompletionModal] =
+    useState<boolean>(false);
+  const [diagnosisResult, setDiagnosisResult] =
+    useState<DiagnosisResponse | null>(null);
 
   const player = useVideoPlayer(videoUri || "", (player) => {
     if (player) {
@@ -115,6 +119,18 @@ export default function Picker() {
     },
   });
 
+  const handleNavigateToInsight = () => {
+    if (!diagnosisResult?.results) return;
+    setShowCompletionModal(false);
+    router.replace({
+      pathname: "/(tabs)/insight",
+      params: {
+        plotUrl: diagnosisResult.results.displacement_plot,
+        registrationData: diagnosisResult.results.registration_data,
+      },
+    });
+  };
+
   const handleVideoAnalysis = async () => {
     if (!videoUri) {
       alert("Please select a video first");
@@ -122,13 +138,15 @@ export default function Picker() {
     }
     try {
       setIsProcessing(true);
+
       const uploadResult = await uploadMutation.mutateAsync(videoUri);
 
       if (uploadResult.success) {
-        const diagnosisResult = await diagnosisMutation.mutateAsync();
+        const result = await diagnosisMutation.mutateAsync();
 
-        if (diagnosisResult.success) {
-          router.push("/(tabs)/insight");
+        if (result.success) {
+          setDiagnosisResult(result);
+          setShowCompletionModal(true);
         }
       }
     } catch (error) {
@@ -153,7 +171,7 @@ export default function Picker() {
             <TouchableOpacity
               onPress={handleVideoAnalysis}
               disabled={isProcessing}
-              className="items-center bg-[#001e57] rounded-lg p-5"
+              className="items-center bg-[#001e57] rounded-lg p-5 shadow-lg"
             >
               <Text
                 className="text-white font-semibold"
@@ -166,12 +184,38 @@ export default function Picker() {
             </TouchableOpacity>
           </View>
           {isProcessing && (
-            <View className="absolute bottom-0 left-0 right-0 p-4 bg-black/50">
-              <Text className="text-white text-center">
-                Processing video...
+            <View className="flex-1 justify-center items-center p-4 bg-black/50">
+              <Text
+                className="text-white text-center"
+                style={{
+                  fontSize: screenWidth * 0.08,
+                }}
+              >
+                Diagnosing...
               </Text>
             </View>
           )}
+
+          <Modal
+            transparent={true}
+            visible={showCompletionModal}
+            animationType="fade"
+          >
+            <View className="flex-1 justify-center items-center bg-black/50">
+              <TouchableOpacity
+                onPress={handleNavigateToInsight}
+                className="bg-white rounded-2xl p-6 items-center mx-8"
+              >
+                <FontAwesome5 name="check-circle" size={60} color="#001e57" />
+                <Text
+                  className="text-[#001e57] font-bold mt-4 text-center"
+                  style={{ fontSize: screenWidth * 0.05 }}
+                >
+                  Diagnosis Completed
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </Modal>
         </View>
       </SafeAreaView>
     );
