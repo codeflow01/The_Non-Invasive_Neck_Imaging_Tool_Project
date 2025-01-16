@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Dimensions } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
@@ -53,7 +53,7 @@ export default function Picker() {
     isPlaying: player.playing,
   });
 
-  const processVideoFile = async () => {
+  const handleVideoSelection = async () => {
     try {
       const { status } =
         await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -75,7 +75,6 @@ export default function Picker() {
       const selectedVideoUri = result.assets[0].uri;
       console.log("Selected video URI:", selectedVideoUri);
       setVideoUri(selectedVideoUri);
-      handleUpload(selectedVideoUri);
     } catch (error) {
       console.error("Error:", error);
       alert("Error selecting video. Please try again.");
@@ -106,17 +105,31 @@ export default function Picker() {
     },
   });
 
-  
+  const diagnosisMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(`${SERVER_URL}/diagnosis/cardiac`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      return response.json() as Promise<DiagnosisResponse>;
+    },
+  });
 
-  const handleUpload = async (videoUri: string) => {
+  const handleVideoAnalysis = async () => {
+    if (!videoUri) {
+      alert("Please select a video first");
+      return;
+    }
     try {
       setIsProcessing(true);
       const uploadResult = await uploadMutation.mutateAsync(videoUri);
-      
+
       if (uploadResult.success) {
-        await diagnosisMutation.mutateAsync();
-        alert("Video processed successfully!");
-        router.back();
+        const diagnosisResult = await diagnosisMutation.mutateAsync();
+
+        if (diagnosisResult.success) {
+          router.push("/(tabs)/insight");
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -126,17 +139,40 @@ export default function Picker() {
     }
   };
 
-
-
   if (videoUri) {
     return (
       <SafeAreaView className="flex-1">
-        <VideoView
-          style={{ flex: 1 }}
-          player={player}
-          allowsFullscreen
-          allowsPictureInPicture
-        />
+        <View className="flex-1">
+          <VideoView
+            style={{ flex: 1, width: screenWidth, height: screenHeight }}
+            player={player}
+            allowsFullscreen
+            allowsPictureInPicture
+          />
+          <View className="" style={{ padding: screenWidth * 0.04 }}>
+            <TouchableOpacity
+              onPress={handleVideoAnalysis}
+              disabled={isProcessing}
+              className="items-center bg-[#001e57] rounded-lg p-5"
+            >
+              <Text
+                className="text-white font-semibold"
+                style={{
+                  fontSize: screenWidth * 0.04,
+                }}
+              >
+                {isProcessing ? "Processing..." : "Diagnosis"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+          {isProcessing && (
+            <View className="absolute bottom-0 left-0 right-0 p-4 bg-black/50">
+              <Text className="text-white text-center">
+                Processing video...
+              </Text>
+            </View>
+          )}
+        </View>
       </SafeAreaView>
     );
   }
@@ -145,7 +181,7 @@ export default function Picker() {
     <View className="flex-1 bg-white">
       <View className="flex-1 justify-evenly items-center p-10">
         <TouchableOpacity
-          onPress={processVideoFile}
+          onPress={handleVideoSelection}
           disabled={isProcessing}
           className="items-center bg-gray-100 p-8 rounded-lg w-4/5 shadow-sm"
         >
@@ -155,31 +191,12 @@ export default function Picker() {
             color="black"
           />
           <View className="items-center mt-4">
-            {isProcessing ? (
-              <>
-                <Text
-                  className="font-semibold text-xl text-red-700"
-                  style={{ fontSize: screenWidth * 0.045 }}
-                >
-                  Processing...
-                </Text>
-                <Text
-                  className="text-gray-500 text-center mt-1"
-                  style={{ fontSize: screenWidth * 0.04 }}
-                >
-                  Analyzing your video
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text
-                  className="text-gray-600 text-center mt-1"
-                  style={{ fontSize: screenWidth * 0.04 }}
-                >
-                  Select a video from library for diagnosis
-                </Text>
-              </>
-            )}
+            <Text
+              className="text-gray-600 text-center mt-1"
+              style={{ fontSize: screenWidth * 0.04 }}
+            >
+              Select a video from library for diagnosis
+            </Text>
           </View>
         </TouchableOpacity>
       </View>
