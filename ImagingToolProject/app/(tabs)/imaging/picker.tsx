@@ -36,9 +36,9 @@ export default function Picker() {
   const screenHeight = Dimensions.get("window").height;
 
   // VIC
-  const SERVER_URL = "http://192.168.1.19:8000";
+  // const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
-  // const SERVER_URL = "http://172.23.96.207:8000";
+  const SERVER_URL = "http://172.23.23.251:8000";
 
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -122,7 +122,7 @@ export default function Picker() {
   const handleNavigateToInsight = () => {
     if (!diagnosisResult?.results) return;
     setShowCompletionModal(false);
-    router.replace({
+    router.push({
       pathname: "/(tabs)/insight",
       params: {
         plotUrl: diagnosisResult.results.displacement_plot,
