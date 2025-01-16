@@ -31,13 +31,9 @@ app.add_middleware(
 # Get current directory and setup storage paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
-parent_dir = os.path.dirname(current_dir)
-
 frames_storage = os.path.join(current_dir, "server-fastapi-frames-storage")
 results_storage = os.path.join(current_dir, "server-fastapi-results-storage")
 video_storage = os.path.join(current_dir, "server-fastapi-video-storage")
-
-input_folder_path = os.path.join(parent_dir, "frontend-storage")
 
 print(f"(∆π∆) Frames storage path: {frames_storage}")
 print(f"(∆π∆) Results storage path: {results_storage}")
@@ -45,8 +41,6 @@ print(f"(∆π∆) Video storage path: {video_storage}")
 print(f"(∆π∆) Frames storage exists: {os.path.exists(frames_storage)}")
 print(f"(∆π∆) Results storage exists: {os.path.exists(results_storage)}")
 print(f"(∆π∆) Video storage exists: {os.path.exists(video_storage)}")
-
-print(f"(∆π∆) Input folder exists: {os.path.exists(input_folder_path)}")
 
 # Mount the storage directories for static file serving
 app.mount("/server-fastapi-frames-storage", StaticFiles(directory=frames_storage), name="frames")
@@ -84,19 +78,18 @@ async def upload_video(video: UploadFile = File(...)):
 @router.get("/diagnosis/cardiac")
 async def diagnose_cardiac():
     try:
-        input_folder_path = os.path.join(parent_dir, "frontend-storage")
-        print(f"(∆π∆) Checking input folder: {input_folder_path}")
-        if not os.path.exists(input_folder_path):
-            print(f"(∆π∆) Input folder does not exist: {input_folder_path}")
-            return {"success": False, "message": "Input folder not found"}
+        print(f"(∆π∆) Checking video storage: {video_storage}")
+        if not os.path.exists(video_storage):
+            print(f"(∆π∆) Video storage does not exist: {video_storage}")
+            return {"success": False, "message": "Video storage not found"}
    
-        video_files = [f for f in os.listdir(input_folder_path) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        video_files = [f for f in os.listdir(video_storage) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
         if not video_files:
             return {"success": False, "message": "No video files found"}
             
         video_name = Path(video_files[0]).stem
         success = await video_cardiac_analyze(
-            input_path=input_folder_path,
+            input_path=video_storage,
             frames_path=frames_storage,
             results_path=results_storage
         )
