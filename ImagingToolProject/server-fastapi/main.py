@@ -1,9 +1,10 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 from diagnosis_cardiac import video_cardiac_analyze
 from fastapi.staticfiles import StaticFiles
 import os
+import shutil
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -12,6 +13,7 @@ load_dotenv()
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8000"))
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:8081").split(",")
+
 
 app = FastAPI()
 router = APIRouter()
@@ -28,26 +30,55 @@ app.add_middleware(
 
 # Get current directory and setup storage paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
+
 parent_dir = os.path.dirname(current_dir)
 
 frames_storage = os.path.join(current_dir, "server-fastapi-frames-storage")
 results_storage = os.path.join(current_dir, "server-fastapi-results-storage")
+video_storage = os.path.join(current_dir, "server-fastapi-video-storage")
+
 input_folder_path = os.path.join(parent_dir, "frontend-storage")
 
 print(f"(∆π∆) Frames storage path: {frames_storage}")
 print(f"(∆π∆) Results storage path: {results_storage}")
+print(f"(∆π∆) Video storage path: {video_storage}")
 print(f"(∆π∆) Frames storage exists: {os.path.exists(frames_storage)}")
 print(f"(∆π∆) Results storage exists: {os.path.exists(results_storage)}")
+print(f"(∆π∆) Video storage exists: {os.path.exists(video_storage)}")
+
 print(f"(∆π∆) Input folder exists: {os.path.exists(input_folder_path)}")
 
 # Mount the storage directories for static file serving
 app.mount("/server-fastapi-frames-storage", StaticFiles(directory=frames_storage), name="frames")
 app.mount("/server-fastapi-results-storage", StaticFiles(directory=results_storage), name="results")
+app.mount("/server-fastapi-video-storage", StaticFiles(directory=video_storage), name="videos")
 
 
 @app.get("/")
 async def root():
     return {"message": "Python FastAPI server is running!"}
+
+
+@router.post("/upload/video")
+async def upload_video(video: UploadFile = File(...)):
+    try:
+        file_path = os.path.join(video_storage, video.filename)
+        
+        with open(file_path, "wb") as buffer:
+            shutil.copyfileobj(video.file, buffer)
+        
+        return {
+            "success": True,
+            "message": "Video uploaded successfully",
+            "filename": video.filename,
+            "path": f"/server-fastapi-video-storage/{video.filename}"
+        }
+    except Exception as e:
+        print(f"Error uploading file: {e}")
+        return {
+            "success": False,
+            "message": {e}
+        }
 
 
 @router.get("/diagnosis/cardiac")
@@ -101,6 +132,7 @@ async def diagnose_cardiac():
 @router.get("/api")
 async def api_endpoint():
     return {"message": "Connected"}
+
 
 app.include_router(router)
 
