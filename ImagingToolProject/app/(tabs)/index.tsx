@@ -21,9 +21,9 @@ export default function Index() {
     queryKey: ["apiMessage"],
     queryFn: async () => {
       // ABI
-      const response = await fetch("http://172.23.23.251:8000/api");
+      // const response = await fetch("http://172.23.23.251:8000/api");
       // VIC
-      // const response = await fetch("http://192.168.1.19:8000/api");
+      const response = await fetch("http://192.168.1.19:8000/api");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -44,7 +44,7 @@ export default function Index() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView contentContainerStyle={{ flex: 1 }}>
       <View
         className="flex-1 items-center justify-center bg-gray-100"
         style={{ padding: screenWidth * 0.08 }}

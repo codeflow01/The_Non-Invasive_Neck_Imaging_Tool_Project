@@ -45,7 +45,7 @@ export default function BMICalculator() {
   };
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView contentContainerStyle={{ flex: 1 }}>
       <View
         className="flex-1 items-center justify-center bg-gray-100"
         style={{ padding: screenWidth * 0.08 }}
@@ -61,7 +61,7 @@ export default function BMICalculator() {
             className="font-bold text-center text-[#001e57]"
             style={{
               fontSize: screenWidth * 0.06,
-              marginBottom: screenHeight * 0.02,
+              marginBottom: screenHeight * 0.04,
             }}
           >
             BMI Calculator
@@ -116,7 +116,7 @@ export default function BMICalculator() {
           <TouchableOpacity
             onPress={calculateBMI}
             className="items-center bg-[#001e57] rounded-lg shadow-lg"
-            style={{ padding: screenWidth * 0.04, marginBottom: screenHeight * 0.02 }}
+            style={{ padding: screenWidth * 0.04, marginBottom: screenHeight * 0.02, marginTop: screenHeight * 0.02 }}
           >
             <Text
               className="text-white font-semibold"

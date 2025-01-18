@@ -15,7 +15,7 @@ export default function Imaging() {
   const tabBarWidth = screenWidth * 0.85;
 
   return (
-    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScrollView contentContainerStyle={{ flex: 1 }}>
       <View
         className="flex-1 items-center justify-center bg-gray-100"
         style={{ padding: screenWidth * 0.08 }}
@@ -74,7 +74,7 @@ export default function Imaging() {
               style={{
                 height: screenHeight * 0.15,
                 justifyContent: "center",
-                paddingVertical: screenHeight * 0.02,
+                paddingVertical: screenHeight * 0.02, marginBottom: screenHeight * 0.02
               }}
             >
               <FontAwesome5

@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Dimensions, Modal } from "react-native";
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import { router } from "expo-router";
@@ -36,9 +36,9 @@ export default function Picker() {
   const screenHeight = Dimensions.get("window").height;
 
   // VIC
-  // const SERVER_URL = "http://192.168.1.19:8000";
+  const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
-  const SERVER_URL = "http://172.23.23.251:8000";
+  // const SERVER_URL = "http://172.23.23.251:8000";
 
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -213,6 +213,15 @@ export default function Picker() {
                 >
                   Diagnosis Completed
                 </Text>
+                 <Text
+                  className="text-gray-600 mt-4 text-center"
+                  style={{
+                    marginBottom: screenHeight * 0.01,
+                    fontSize: screenWidth * 0.03,
+                  }}
+                  >
+                    Slide down to view the results
+                  </Text>
               </TouchableOpacity>
             </View>
           </Modal>
