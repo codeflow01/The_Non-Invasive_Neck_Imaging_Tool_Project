@@ -7,11 +7,11 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Modal,
-  Pressable,
 } from "react-native";
 import React, { useState } from "react";
 import { useLocalSearchParams, router } from "expo-router";
 import { useQuery } from "@tanstack/react-query";
+import ImageViewer from "react-native-image-zoom-viewer";
 
 interface Params {
   plotUrl: string;
@@ -24,6 +24,7 @@ export default function Insight() {
   const containerWidth = screenWidth * 0.85;
   const params = useLocalSearchParams();
   const [modalVisible, setModalVisible] = useState(false);
+  const [imageModalVisible, setImageModalVisible] = useState(false);
 
   // VIC
   const SERVER_URL = "http://192.168.1.19:8000";
@@ -42,6 +43,8 @@ export default function Insight() {
     enabled: plotUrl !== undefined,
   });
 
+  const images = data ? [{ url: data }] : [];
+
   const handleNavigateToImaging = () => {
     router.push("/(tabs)/imaging");
   };
@@ -57,12 +60,14 @@ export default function Insight() {
           style={{
             width: containerWidth,
             padding: screenWidth * 0.05,
-            
           }}
         >
           <Text
             className="text-[#001e57] font-bold text-center mb-6"
-            style={{ fontSize: screenWidth * 0.06, marginBottom: screenHeight * 0.04 }}
+            style={{
+              fontSize: screenWidth * 0.06,
+              marginBottom: screenHeight * 0.04,
+            }}
           >
             Diagnosis Results
           </Text>
@@ -78,7 +83,10 @@ export default function Insight() {
             </View>
           ) : data ? (
             <View>
-              <View className="bg-gray-50 rounded-lg mb-4">
+              <TouchableOpacity
+                className="bg-gray-50 rounded-lg mb-4"
+                onPress={() => setImageModalVisible(true)}
+              >
                 <Image
                   source={{ uri: data }}
                   style={{
@@ -87,7 +95,58 @@ export default function Insight() {
                   }}
                   resizeMode="contain"
                 />
-              </View>
+                <Text
+                  className="text-gray-600 text-center mb-4"
+                  style={{ fontSize: screenWidth * 0.03 }}
+                >
+                  Tap to zoom the results
+                </Text>
+              </TouchableOpacity>
+
+              <Modal
+                animationType="slide"
+                visible={imageModalVisible}
+                transparent={true}
+                onRequestClose={() => setImageModalVisible(false)}
+              >
+                <View
+                  className=" bg-black"
+                  style={{ flex: 1, paddingTop: screenHeight * 0.02 }}
+                >
+                  <ImageViewer
+                    imageUrls={images}
+                    enableSwipeDown={true}
+                    onSwipeDown={() => setImageModalVisible(false)}
+                    enableImageZoom={true}
+                    saveToLocalByLongPress={false}
+                  />
+                  <View className="absolute bottom-8 left-0 right-0 px-8">
+                    <TouchableOpacity
+                      className="bg-white rounded-lg shadow-lg"
+                      style={{
+                        padding: screenWidth * 0.04,
+                      }}
+                      onPress={() => setImageModalVisible(false)}
+                    >
+                      <Text
+                        className="text-black text-center font-semibold"
+                        style={{
+                          fontSize: screenWidth * 0.04,
+                        }}
+                      >
+                        Close
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                  {/* <TouchableOpacity
+                    onPress={() => setImageModalVisible(false)}
+                    className="absolute top-12 right-4 bg-black/50 rounded-full p-2"
+                  >
+                    <Text className="text-white font-bold text-lg">✕</Text>
+                  </TouchableOpacity> */}
+                </View>
+              </Modal>
+
               {registrationData && (
                 <View className="mt-4">
                   <TouchableOpacity
@@ -121,7 +180,7 @@ export default function Insight() {
                         >
                           Detailed data has been exported to csv file
                         </Text>
-                        <Pressable
+                        <TouchableOpacity
                           className="bg-[#001e57] rounded-lg shadow-lg"
                           style={{
                             padding: screenWidth * 0.04,
@@ -137,7 +196,7 @@ export default function Insight() {
                           >
                             Close
                           </Text>
-                        </Pressable>
+                        </TouchableOpacity>
                       </View>
                     </View>
                   </Modal>
@@ -149,7 +208,8 @@ export default function Insight() {
               onPress={handleNavigateToImaging}
               className="bg-[#001e57] rounded-lg shadow-lg"
               style={{
-                padding: screenWidth * 0.04, marginBottom: screenHeight * 0.02
+                padding: screenWidth * 0.04,
+                marginBottom: screenHeight * 0.02,
               }}
             >
               <Text
