@@ -158,7 +158,7 @@ export default function Insight() {
                   fontSize: screenWidth * 0.04,
                 }}
               >
-                Run the diagnosis first
+                Run the Diagnosis first
               </Text>
             </TouchableOpacity>
           )}
