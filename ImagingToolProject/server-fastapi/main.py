@@ -7,6 +7,7 @@ import os
 import shutil
 from pathlib import Path
 from dotenv import load_dotenv
+import cv2
 
 
 load_dotenv()
@@ -31,6 +32,7 @@ app.add_middleware(
 # Get current directory and setup storage paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
+roi_frames_storage = os.path.join(current_dir, "server-fastapi-roiFrames-storage")
 frames_storage = os.path.join(current_dir, "server-fastapi-frames-storage")
 results_storage = os.path.join(current_dir, "server-fastapi-results-storage")
 video_storage = os.path.join(current_dir, "server-fastapi-video-storage")
@@ -38,11 +40,14 @@ video_storage = os.path.join(current_dir, "server-fastapi-video-storage")
 print(f"(∆π∆) Frames storage path: {frames_storage}")
 print(f"(∆π∆) Results storage path: {results_storage}")
 print(f"(∆π∆) Video storage path: {video_storage}")
+print(f"(∆π∆) ROI frame storage path: {roi_frames_storage}")
+print(f"(∆π∆) ROI frame storage exists: {os.path.exists(roi_frames_storage)}")
 print(f"(∆π∆) Frames storage exists: {os.path.exists(frames_storage)}")
 print(f"(∆π∆) Results storage exists: {os.path.exists(results_storage)}")
 print(f"(∆π∆) Video storage exists: {os.path.exists(video_storage)}")
 
 # Mount the storage directories for static file serving
+app.mount("/server-fastapi-roiFrames-storage", StaticFiles(directory=roi_frames_storage), name="roi_frames")
 app.mount("/server-fastapi-frames-storage", StaticFiles(directory=frames_storage), name="frames")
 app.mount("/server-fastapi-results-storage", StaticFiles(directory=results_storage), name="results")
 app.mount("/server-fastapi-video-storage", StaticFiles(directory=video_storage), name="videos")
@@ -73,10 +78,42 @@ async def upload_video(video: UploadFile = File(...)):
             "success": False,
             "message": {e}
         }
+    
+
+@router.get("/video/roi-frame")
+async def get_roi_frame():
+    try:
+        video_files = [f for f in os.listdir(video_storage) 
+                      if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        if not video_files:
+            return {"success": False, "message": "No video files found"}
+            
+        video_path = os.path.join(video_storage, video_files[-1])
+        
+        cap = cv2.VideoCapture(video_path)
+        ret, frame = cap.read()
+        cap.release()
+        
+        if ret:
+            frame_path = os.path.join(roi_frames_storage, "roi_frame.png")
+            cv2.imwrite(frame_path, frame)
+            return {
+                "success": True,
+                "roiFrame": "/server-fastapi-roiFrames-storage/roi_frame.png"
+            }
+        else:
+            return {"success": False, "message": "Could not read video roi frame"}
+            
+    except Exception as e:
+        print(f"Error getting roi frame: {e}")
+        return {
+            "success": False,
+            "message": {e}
+        }
 
 
 @router.get("/diagnosis/cardiac")
-async def diagnose_cardiac():
+async def diagnose_cardiac(roi:dict):
     try:
         print(f"(∆π∆) Checking video storage: {video_storage}")
         if not os.path.exists(video_storage):
@@ -88,10 +125,12 @@ async def diagnose_cardiac():
             return {"success": False, "message": "No video files found"}
             
         video_name = Path(video_files[0]).stem
+        
         success = await video_cardiac_analyze(
             input_path=video_storage,
             frames_path=frames_storage,
-            results_path=results_storage
+            results_path=results_storage,
+            roi=roi
         )
         
         if success:

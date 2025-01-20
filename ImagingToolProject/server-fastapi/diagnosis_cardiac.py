@@ -21,6 +21,7 @@ class VideoProcess:
         self.frame_count = 0
         self.registration_results = []
         self.registration_locations = []
+        self.roi = None
     
     def load_video(self) -> bool:
         self.cap = cv2.VideoCapture(self.video_path)
@@ -29,12 +30,20 @@ class VideoProcess:
         self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
         return True
     
+    def set_roi(self, x: int, y: int, width: int, height: int):
+        self.roi = (x, y, width, height)
+    
     def extract_frames(self, output_folder: str) -> List[np.ndarray]:
         frame_count = 0
         while True:
             ret, frame = self.cap.read()
             if not ret:
                 break
+
+            if self.roi:
+                x, y, w, h = self.roi
+                frame = frame[y:y+h, x:x+w]
+
             frame_filename = os.path.join(output_folder, f"frame_{frame_count:03d}.png")
             cv2.imwrite(frame_filename, frame)
             self.frames.append(frame)
@@ -155,7 +164,7 @@ class DataVisualization:
             print(f"Error creating displacement plot: {e}")
             return False
 
-async def process_video_sync(input_folder_path: str, frames_storage_path: str, results_storage_path: str) -> bool:
+async def process_video_sync(input_folder_path: str, frames_storage_path: str, results_storage_path: str, roi: dict=None) -> bool:
     print(f"(∆π∆)Input folder: {input_folder_path}")
     print(f"(∆π∆)Frames storage: {frames_storage_path}")
     print(f"(∆π∆)Results storage: {results_storage_path}")
@@ -172,6 +181,8 @@ async def process_video_sync(input_folder_path: str, frames_storage_path: str, r
         # Decompose video into frames
         processor = VideoProcess(video_path)
         processor.load_video()
+        if roi:
+            processor.set_roi(roi['x'], roi['y'], roi['width'], roi['height'])
         frames = processor.extract_frames(frames_storage_path)
 
         # Image registration
@@ -190,9 +201,9 @@ async def process_video_sync(input_folder_path: str, frames_storage_path: str, r
         return False
 
 
-async def video_cardiac_analyze(input_path: str, frames_path: str, results_path: str) -> bool:
+async def video_cardiac_analyze(input_path: str, frames_path: str, results_path: str, roi: dict = None) -> bool:
     try:
-        result = await process_video_sync(input_path, frames_path, results_path)
+        result = await process_video_sync(input_path, frames_path, results_path, roi)
         return result
     except Exception as e:
         print(f"Error in video cardiac analyze: {e}")
