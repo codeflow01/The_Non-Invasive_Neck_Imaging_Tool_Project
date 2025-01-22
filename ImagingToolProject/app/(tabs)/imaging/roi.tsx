@@ -41,6 +41,11 @@ interface RoiFrameResponse {
 export default function Roi() {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
+  const buttonPadding = screenWidth * 0.04;
+  const fontSize = screenWidth * 0.04;
+  const iconSize = screenWidth * 0.15;
+  const modalPadding = screenWidth * 0.05;
+
   const { roiFrame } = useLocalSearchParams();
   const [roi, setRoi] = useState<ROI | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
@@ -48,7 +53,6 @@ export default function Roi() {
     useState<DiagnosisResponse | null>(null);
   const navigation = useNavigation();
   const [containerHeight, setContainerHeight] = useState(0);
-  // const [isProcessing, setIsProcessing] = useState(false);
 
   // VIC
   const SERVER_URL = "http://192.168.1.19:8000";
@@ -134,7 +138,9 @@ export default function Roi() {
   if (isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
-        <Text className="text-[#001e57] text-lg">Loading ROI frame...</Text>
+        <Text className="text-[#001e57]" style={{ fontSize }}>
+          Loading ROI frame...
+        </Text>
       </SafeAreaView>
     );
   }
@@ -142,14 +148,17 @@ export default function Roi() {
   if (error) {
     return (
       <SafeAreaView className="flex-1 bg-gray-100 justify-center items-center">
-        <Text className="text-red-500 text-lg">
+        <Text className="text-red-500" style={{ fontSize }}>
           Failed to load ROI frame. Please check your connection and try again.
         </Text>
         <TouchableOpacity
           onPress={handleCancel}
-          className="mt-4 bg-[#001e57] px-6 py-3 rounded-lg"
+          className="bg-[#001e57] rounded-lg"
+          style={{ padding: buttonPadding, marginTop: screenHeight * 0.02 }}
         >
-          <Text className="text-white">Go Back</Text>
+          <Text className="text-white" style={{ fontSize }}>
+            Go Back
+          </Text>
         </TouchableOpacity>
       </SafeAreaView>
     );
@@ -173,11 +182,12 @@ export default function Roi() {
           )}
         </View>
 
-        <View className="p-4 space-y-2">
+        <View className="space-y-2" style={{ padding: screenWidth * 0.04 }}>
           <TouchableOpacity
             onPress={handleConfirm}
             disabled={!roi || diagnosisMutation.isPending}
-            className={`rounded-lg p-4 flex-row justify-center items-center space-x-2 mb-2 ${
+            style={{ padding: buttonPadding }}
+            className={`rounded-lg flex-row justify-center items-center space-x-2 mb-2 ${
               !roi || diagnosisMutation.isPending
                 ? "bg-gray-400"
                 : "bg-[#001e57]"
@@ -186,7 +196,7 @@ export default function Roi() {
             {diagnosisMutation.isPending && (
               <ActivityIndicator size="small" color="white" />
             )}
-            <Text className="text-white font-semibold text-lg">
+            <Text className="text-white font-semibold" style={{ fontSize }}>
               {diagnosisMutation.isPending
                 ? "Processing..."
                 : "Start Diagnosis"}
@@ -196,9 +206,13 @@ export default function Roi() {
           <TouchableOpacity
             onPress={handleCancel}
             disabled={diagnosisMutation.isPending}
-            className="bg-gray-200 rounded-lg p-4"
+            className="bg-gray-200 rounded-lg"
+            style={{ padding: buttonPadding }}
           >
-            <Text className="text-gray-700 font-semibold text-center text-lg">
+            <Text
+              className="text-gray-700 font-semibold text-center"
+              style={{ fontSize }}
+            >
               {diagnosisResult ? "Close" : "Cancel"}
             </Text>
           </TouchableOpacity>
@@ -214,13 +228,27 @@ export default function Roi() {
             <TouchableOpacity
               onPress={handleResultToInsight}
               activeOpacity={0.7}
-              className="bg-white rounded-2xl p-6 items-center mx-8"
+              className="bg-white rounded-2xl items-center"
+              style={{
+                padding: modalPadding,
+                marginHorizontal: screenWidth * 0.08,
+              }}
             >
-              <FontAwesome5 name="check-circle" size={60} color="#001e57" />
-              <Text className="text-[#001e57] font-bold mt-4 text-center text-xl">
+              <FontAwesome5
+                name="check-circle"
+                size={iconSize}
+                color="#001e57"
+              />
+              <Text
+                className="text-[#001e57] font-bold mt-4 text-center"
+                style={{ fontSize: fontSize * 1.2 }}
+              >
                 Diagnosis Completed
               </Text>
-              <Text className="text-gray-600 mt-4 text-center text-base">
+              <Text
+                className="text-gray-600 mt-4 text-center"
+                style={{ fontSize }}
+              >
                 Tap close button view the results
               </Text>
             </TouchableOpacity>
