@@ -22,6 +22,7 @@ interface RoiToolProps {
   videoWidth: number;
   videoHeight: number;
   imageUri: string;
+  containerHeight: number;
 }
 
 export default function RoiTool({
@@ -30,6 +31,7 @@ export default function RoiTool({
   videoWidth,
   videoHeight,
   imageUri,
+  containerHeight,
 }: RoiToolProps) {
   const [roi, setRoi] = useState<ROI>({ x: 0, y: 0, width: 0, height: 0 });
   const [isDrawing, setIsDrawing] = useState(false);
@@ -47,7 +49,7 @@ export default function RoiTool({
     const screenWidth = Dimensions.get("window").width;
     const screenHeight = Dimensions.get("window").height;
 
-    const availableHeight = screenHeight * 0.8;
+    const availableHeight = containerHeight || screenHeight * 0.8;
 
     const widthBasedHeight = screenWidth / aspectRatio;
     const heightBasedWidth = availableHeight * aspectRatio;

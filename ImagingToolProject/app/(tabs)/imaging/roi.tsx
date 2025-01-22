@@ -6,6 +6,7 @@ import {
   Dimensions,
   Modal,
   ActivityIndicator,
+  LayoutChangeEvent,
 } from "react-native";
 import { useLocalSearchParams, router, useNavigation } from "expo-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -46,12 +47,18 @@ export default function Roi() {
   const [diagnosisResult, setDiagnosisResult] =
     useState<DiagnosisResponse | null>(null);
   const navigation = useNavigation();
+  const [containerHeight, setContainerHeight] = useState(0);
   // const [isProcessing, setIsProcessing] = useState(false);
 
   // VIC
   const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
   // const SERVER_URL = "http://172.23.23.251:8000";
+
+  const handleLayout = (event: LayoutChangeEvent) => {
+    const { height } = event.nativeEvent.layout;
+    setContainerHeight(height);
+  };
 
   const { data, error, isLoading } = useQuery({
     queryKey: ["roiFrame"],
@@ -152,28 +159,25 @@ export default function Roi() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
-      <View className="flex-1">
-        {/* <View className="py-4 px-4 bg-white">
-          <Text className="text-center text-[#001e57] font-bold text-xl">
-            Draw Region of Interest
-          </Text>
-        </View> */}
-
-        <View className="flex-1">
-          <RoiTool
-            onRoiSelected={handleRoiSelected}
-            onCancel={handleCancel}
-            videoWidth={data.videoWidth}
-            videoHeight={data.videoHeight}
-            imageUri={roiFrame?.toString() || ""}
-          />
+      <View className="flex-1 justify-center">
+        <View className="flex-1 " onLayout={handleLayout}>
+          {containerHeight > 0 && (
+            <RoiTool
+              onRoiSelected={handleRoiSelected}
+              onCancel={handleCancel}
+              videoWidth={data.videoWidth}
+              videoHeight={data.videoHeight}
+              imageUri={roiFrame?.toString() || ""}
+              containerHeight={containerHeight}
+            />
+          )}
         </View>
 
         <View className="p-4 space-y-2">
           <TouchableOpacity
             onPress={handleConfirm}
             disabled={!roi || diagnosisMutation.isPending}
-            className={`rounded-lg p-4 flex-row justify-center items-center space-x-2 ${
+            className={`rounded-lg p-4 flex-row justify-center items-center space-x-2 mb-2 ${
               !roi || diagnosisMutation.isPending
                 ? "bg-gray-400"
                 : "bg-[#001e57]"
