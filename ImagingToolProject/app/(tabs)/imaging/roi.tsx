@@ -176,7 +176,7 @@ export default function Roi() {
               onCancel={handleCancel}
               videoWidth={data.videoWidth}
               videoHeight={data.videoHeight}
-              imageUri={roiFrame?.toString() || ""}
+              imageUri={`${SERVER_URL}${data.roiFrame}`}
               containerHeight={containerHeight}
             />
           )}

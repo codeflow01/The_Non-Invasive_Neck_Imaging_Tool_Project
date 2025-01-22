@@ -37,14 +37,6 @@ frames_storage = os.path.join(current_dir, "server-fastapi-frames-storage")
 results_storage = os.path.join(current_dir, "server-fastapi-results-storage")
 video_storage = os.path.join(current_dir, "server-fastapi-video-storage")
 
-print(f"(∆π∆) Frames storage path: {frames_storage}")
-print(f"(∆π∆) Results storage path: {results_storage}")
-print(f"(∆π∆) Video storage path: {video_storage}")
-print(f"(∆π∆) ROI frame storage path: {roi_frames_storage}")
-print(f"(∆π∆) ROI frame storage exists: {os.path.exists(roi_frames_storage)}")
-print(f"(∆π∆) Frames storage exists: {os.path.exists(frames_storage)}")
-print(f"(∆π∆) Results storage exists: {os.path.exists(results_storage)}")
-print(f"(∆π∆) Video storage exists: {os.path.exists(video_storage)}")
 
 # Mount the storage directories for static file serving
 app.mount("/server-fastapi-roiFrames-storage", StaticFiles(directory=roi_frames_storage), name="roi_frames")
@@ -58,9 +50,25 @@ async def root():
     return {"message": "Python FastAPI server is running!"}
 
 
+# clean up directory
+def cleanup_directory(directory_path):
+    if os.path.exists(directory_path):
+        for filename in os.listdir(directory_path):
+            file_path = os.path.join(directory_path, filename)
+            try:
+                if os.path.isfile(file_path):
+                    os.unlink(file_path)
+            except Exception as e:
+                print(f"Error deleting {file_path}: {e}")
+
+
 @router.post("/upload/video")
 async def upload_video(video: UploadFile = File(...)):
     try:
+
+        cleanup_directory(frames_storage)
+        cleanup_directory(video_storage)
+
         file_path = os.path.join(video_storage, video.filename)
         
         with open(file_path, "wb") as buffer:
@@ -89,6 +97,7 @@ async def get_roi_frame():
             return {"success": False, "message": "No video files found"}
             
         video_path = os.path.join(video_storage, video_files[-1])
+        video_filename = Path(video_files[-1]).stem
         
         cap = cv2.VideoCapture(video_path)
 
@@ -100,11 +109,12 @@ async def get_roi_frame():
         cap.release()
         
         if ret:
-            frame_path = os.path.join(roi_frames_storage, "roi_frame.png")
+            roi_frame_name = f"roi_frame_{video_filename}.png"
+            frame_path = os.path.join(roi_frames_storage, roi_frame_name)
             cv2.imwrite(frame_path, frame)
             return {
                 "success": True,
-                "roiFrame": "/server-fastapi-roiFrames-storage/roi_frame.png",
+                "roiFrame": f"/server-fastapi-roiFrames-storage/{roi_frame_name}",
                 "videoWidth": actual_width,
                 "videoHeight": actual_height
             }
@@ -122,52 +132,44 @@ async def get_roi_frame():
 @router.post("/diagnosis/cardiac")
 async def diagnose_cardiac(roi:dict):
     try:
-        print(f"\n(∆π∆)=== Starting /diagnosis/cardiac endpoint ===")
-        print(f"(∆π∆)1. Received ROI data: {roi}")
         
-        print(f"(∆π∆)2. Checking video storage at: {video_storage}")
         if not os.path.exists(video_storage):
             raise ValueError(f"Video storage directory does not exist: {video_storage}")
    
         video_files = [f for f in os.listdir(video_storage) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
-        print(f"(∆π∆)3. Found video files: {video_files}")
 
         if not video_files:
             return {"success": False, "message": "No video files found"}
             
         video_name = Path(video_files[0]).stem
-        print(f"(∆π∆)4. Selected video: {video_name}")
         
-        print("(∆π∆)5. Starting video analysis")
         success = await video_cardiac_analyze(
             input_path=video_storage,
             frames_path=frames_storage,
             results_path=results_storage,
             roi=roi
         )
-        print(f"(∆π∆)6. Analysis completed. Success: {success}")
         
         if success:
-            # Check if output files were generated
-            displacement_plot = os.path.join(results_storage, "total_displacement_plot.png")
-            registration_csv = os.path.join(results_storage, "registration_results.csv")
 
-            print(f"(∆π∆) Checking output files:")
-            print(f"(∆π∆) Displacement plot exists: {os.path.exists(displacement_plot)}")
-            print(f"(∆π∆) Registration CSV exists: {os.path.exists(registration_csv)}")
-            
-            if not (os.path.exists(displacement_plot) and os.path.exists(registration_csv)):
-                return {
-                    "success": False,
-                    "message": "Analysis completed but output files not generated"
-                }
+            displacement_plot = f"total_displacement_plot_{video_name}.png"
+            registration_csv = f"registration_results_{video_name}.csv"
+
+            os.rename(
+                os.path.join(results_storage, "total_displacement_plot.png"),
+                os.path.join(results_storage, displacement_plot)
+            )
+            os.rename(
+                os.path.join(results_storage, "registration_results.csv"),
+                os.path.join(results_storage, registration_csv)
+            )
 
             return {
                 "success": True,
                 "videoName": video_name,
                 "results": {
-                    "displacement_plot": "/server-fastapi-results-storage/total_displacement_plot.png",
-                    "registration_data": "/server-fastapi-results-storage/registration_results.csv"
+                    "displacement_plot": f"/server-fastapi-results-storage/{displacement_plot}",
+                    "registration_data": f"/server-fastapi-results-storage/{registration_csv}"
                 }
             }
         else:
