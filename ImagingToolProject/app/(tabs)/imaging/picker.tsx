@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity, Dimensions, Modal } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { VideoView, useVideoPlayer } from "expo-video";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEvent } from "expo";
@@ -31,6 +31,19 @@ interface VideoUpload {
   name: string;
 }
 
+interface ROIFrame {
+  success: boolean;
+  roiFrame: string;
+  message: string;
+}
+
+interface ROI {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export default function Picker() {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
@@ -46,6 +59,21 @@ export default function Picker() {
     useState<boolean>(false);
   const [diagnosisResult, setDiagnosisResult] =
     useState<DiagnosisResponse | null>(null);
+  const [roiFrame, setRoiFrame] = useState<string | null>(null);
+  const [showRoiSelection, setShowRoiSelection] = useState(false);
+  const [roi, setRoi] = useState<ROI | null>(null);
+  const [isVideoConfirmed, setIsVideoConfirmed] = useState(false);
+
+  // const { selectedRoi } = useLocalSearchParams<{ selectedRoi?: string }>();
+
+  // useEffect(() => {
+  //   if (selectedRoi) {
+  //     const parsedRoi = JSON.parse(selectedRoi);
+  //     setRoi(parsedRoi);
+  //     // Trigger diagnosis
+  //     handleRoiSelected(parsedRoi);
+  //   }
+  // }, [selectedRoi]);
 
   const player = useVideoPlayer(videoUri || "", (player) => {
     if (player) {
@@ -85,7 +113,7 @@ export default function Picker() {
     }
   };
 
-  const uploadMutation = useMutation({
+  const videoUploadMutation = useMutation({
     mutationFn: async (videoUri: string) => {
       const formData = new FormData();
       const videoUpload: VideoUpload = {
@@ -109,44 +137,53 @@ export default function Picker() {
     },
   });
 
-  const diagnosisMutation = useMutation({
+  const roiFrameMutation = useMutation({
     mutationFn: async () => {
-      const response = await fetch(`${SERVER_URL}/diagnosis/cardiac`);
+      const response = await fetch(`${SERVER_URL}/video/roi-frame`);
       if (!response.ok) {
-        throw new Error("Network response was not ok");
+        throw new Error("Failed to get ROI frame");
       }
-      return response.json() as Promise<DiagnosisResponse>;
+      const result = await response.json();
+      return result as ROIFrame;
     },
   });
 
-  const handleNavigateToInsight = () => {
-    if (!diagnosisResult?.results) return;
-    setShowCompletionModal(false);
-    router.push({
-      pathname: "/(tabs)/insight",
-      params: {
-        plotUrl: diagnosisResult.results.displacement_plot,
-        registrationData: diagnosisResult.results.registration_data,
-      },
-    });
-  };
+  // const diagnosisMutation = useMutation({
+  //   mutationFn: async (roi: ROI) => {
+  //     const response = await fetch(`${SERVER_URL}/diagnosis/cardiac`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({ roi }),
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+  //     return response.json() as Promise<DiagnosisResponse>;
+  //   },
+  // });
 
-  const handleVideoAnalysis = async () => {
+  const handleVideoAndRoiFrame = async () => {
     if (!videoUri) {
       alert("Please select a video first");
       return;
     }
     try {
       setIsProcessing(true);
-
-      const uploadResult = await uploadMutation.mutateAsync(videoUri);
-
+      const uploadResult = await videoUploadMutation.mutateAsync(videoUri!);
       if (uploadResult.success) {
-        const result = await diagnosisMutation.mutateAsync();
-
-        if (result.success) {
-          setDiagnosisResult(result);
-          setShowCompletionModal(true);
+        const roiFrameResult = await roiFrameMutation.mutateAsync();
+        if (roiFrameResult.success) {
+          router.push({
+            pathname: "./roi",
+            params: {
+              videoUri: videoUri,
+              roiFrame: `${SERVER_URL}${roiFrameResult.roiFrame}`,
+              screenWidth: screenWidth,
+              screenHeight: screenHeight,
+            },
+          });
         }
       }
     } catch (error) {
@@ -156,6 +193,37 @@ export default function Picker() {
       setIsProcessing(false);
     }
   };
+
+  // const handleRoiSelected = async (selectedRoi: ROI) => {
+  //   try {
+  //     setIsProcessing(true);
+  //     setShowRoiSelection(false);
+  //     setRoi(selectedRoi);
+
+  //     const result = await diagnosisMutation.mutateAsync(selectedRoi);
+  //     if (result.success) {
+  //       setDiagnosisResult(result);
+  //       setShowCompletionModal(true);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     alert("Error processing video. Please try again.");
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
+
+  // const handleResultToInsight = () => {
+  //   if (!diagnosisResult?.results) return;
+  //   setShowCompletionModal(false);
+  //   router.push({
+  //     pathname: "/(tabs)/insight",
+  //     params: {
+  //       plotUrl: diagnosisResult.results.displacement_plot,
+  //       registrationData: diagnosisResult.results.registration_data,
+  //     },
+  //   });
+  // };
 
   if (videoUri) {
     return (
@@ -167,22 +235,38 @@ export default function Picker() {
             allowsFullscreen
             allowsPictureInPicture
           />
+
           <View className="" style={{ padding: screenWidth * 0.04 }}>
             <TouchableOpacity
-              onPress={handleVideoAnalysis}
+              onPress={handleVideoAndRoiFrame}
               disabled={isProcessing}
               className="items-center bg-[#001e57] rounded-lg p-5 shadow-lg"
             >
               <Text
                 className="text-white font-semibold"
-                style={{
-                  fontSize: screenWidth * 0.04,
-                }}
+                style={{ fontSize: screenWidth * 0.04 }}
               >
-                {isProcessing ? "Processing..." : "Diagnosis"}
+                Confirm and Draw ROI
               </Text>
             </TouchableOpacity>
           </View>
+
+          {/* {showRoiSelection && roiFrame && (
+            <RoiTool
+              onRoiSelected={(selectedRoi) => {
+                setRoi(selectedRoi);
+                setShowRoiSelection(false);
+              }}
+              onCancel={() => {
+                setShowRoiSelection(false);
+                setIsVideoConfirmed(false);
+              }}
+              videoWidth={screenWidth}
+              videoHeight={screenHeight}
+              imageUri={roiFrame}
+            />
+          )} */}
+
           {isProcessing && (
             <View className="flex-1 justify-center items-center p-4 bg-black/50">
               <Text
@@ -191,19 +275,23 @@ export default function Picker() {
                   fontSize: screenWidth * 0.08,
                 }}
               >
-                Diagnosing...
+                {!isVideoConfirmed
+                  ? "Loading ROI frame..."
+                  : showRoiSelection
+                  ? "Please select ROI"
+                  : "Diagnosing..."}
               </Text>
             </View>
           )}
 
-          <Modal
+          {/* <Modal
             transparent={true}
             visible={showCompletionModal}
             animationType="fade"
           >
             <View className="flex-1 justify-center items-center bg-black/50">
               <TouchableOpacity
-                onPress={handleNavigateToInsight}
+                onPress={handleResultToInsight}
                 className="bg-white rounded-2xl p-6 items-center mx-8"
               >
                 <FontAwesome5 name="check-circle" size={60} color="#001e57" />
@@ -213,18 +301,19 @@ export default function Picker() {
                 >
                   Diagnosis Completed
                 </Text>
-                 <Text
+                <Text
                   className="text-gray-600 mt-4 text-center"
                   style={{
                     marginBottom: screenHeight * 0.01,
                     fontSize: screenWidth * 0.03,
                   }}
-                  >
-                    Slide down to view the results
-                  </Text>
+                >
+                  Slide down to view the results
+                </Text>
               </TouchableOpacity>
             </View>
-          </Modal>
+          </Modal> */}
+
         </View>
       </SafeAreaView>
     );

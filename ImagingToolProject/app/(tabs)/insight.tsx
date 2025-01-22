@@ -206,7 +206,7 @@ export default function Insight() {
           ) : (
             <TouchableOpacity
               onPress={handleNavigateToImaging}
-              className="bg-[#001e57] rounded-lg shadow-lg"
+              className="bg-red-700 rounded-lg shadow-lg"
               style={{
                 padding: screenWidth * 0.04,
                 marginBottom: screenHeight * 0.02,
@@ -218,7 +218,7 @@ export default function Insight() {
                   fontSize: screenWidth * 0.04,
                 }}
               >
-                Run the Diagnosis first
+                Please run the Diagnosis first
               </Text>
             </TouchableOpacity>
           )}

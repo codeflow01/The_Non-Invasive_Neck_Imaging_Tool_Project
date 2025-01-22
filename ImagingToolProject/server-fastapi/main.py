@@ -91,6 +91,11 @@ async def get_roi_frame():
         video_path = os.path.join(video_storage, video_files[-1])
         
         cap = cv2.VideoCapture(video_path)
+
+        # Get upload video dimensions
+        actual_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        actual_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
         ret, frame = cap.read()
         cap.release()
         
@@ -99,7 +104,9 @@ async def get_roi_frame():
             cv2.imwrite(frame_path, frame)
             return {
                 "success": True,
-                "roiFrame": "/server-fastapi-roiFrames-storage/roi_frame.png"
+                "roiFrame": "/server-fastapi-roiFrames-storage/roi_frame.png",
+                "videoWidth": actual_width,
+                "videoHeight": actual_height
             }
         else:
             return {"success": False, "message": "Could not read video roi frame"}
@@ -112,31 +119,42 @@ async def get_roi_frame():
         }
 
 
-@router.get("/diagnosis/cardiac")
+@router.post("/diagnosis/cardiac")
 async def diagnose_cardiac(roi:dict):
     try:
-        print(f"(∆π∆) Checking video storage: {video_storage}")
+        print(f"\n(∆π∆)=== Starting /diagnosis/cardiac endpoint ===")
+        print(f"(∆π∆)1. Received ROI data: {roi}")
+        
+        print(f"(∆π∆)2. Checking video storage at: {video_storage}")
         if not os.path.exists(video_storage):
-            print(f"(∆π∆) Video storage does not exist: {video_storage}")
-            return {"success": False, "message": "Video storage not found"}
+            raise ValueError(f"Video storage directory does not exist: {video_storage}")
    
         video_files = [f for f in os.listdir(video_storage) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        print(f"(∆π∆)3. Found video files: {video_files}")
+
         if not video_files:
             return {"success": False, "message": "No video files found"}
             
         video_name = Path(video_files[0]).stem
+        print(f"(∆π∆)4. Selected video: {video_name}")
         
+        print("(∆π∆)5. Starting video analysis")
         success = await video_cardiac_analyze(
             input_path=video_storage,
             frames_path=frames_storage,
             results_path=results_storage,
             roi=roi
         )
+        print(f"(∆π∆)6. Analysis completed. Success: {success}")
         
         if success:
             # Check if output files were generated
             displacement_plot = os.path.join(results_storage, "total_displacement_plot.png")
             registration_csv = os.path.join(results_storage, "registration_results.csv")
+
+            print(f"(∆π∆) Checking output files:")
+            print(f"(∆π∆) Displacement plot exists: {os.path.exists(displacement_plot)}")
+            print(f"(∆π∆) Registration CSV exists: {os.path.exists(registration_csv)}")
             
             if not (os.path.exists(displacement_plot) and os.path.exists(registration_csv)):
                 return {
@@ -157,6 +175,8 @@ async def diagnose_cardiac(roi:dict):
     
     except Exception as e:
         print(f"Error in diagnosis endpoint: {e}")
+        import traceback
+        traceback.print_exc()
         return {"success": False, "message": {e}}
 
 

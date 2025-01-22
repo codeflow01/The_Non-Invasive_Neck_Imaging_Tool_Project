@@ -18,6 +18,14 @@ export default function VisionLayout() {
           headerTitle: "Instant Diagnosis",
         }}
       />
+      <Stack.Screen
+        name="roi"
+        options={{
+          presentation: "fullScreenModal",
+          headerTitle: "Draw ROI",
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }
