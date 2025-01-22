@@ -185,6 +185,10 @@ async def diagnose_cardiac(roi:dict):
 # For REST API Testing
 @router.get("/api")
 async def api_endpoint():
+    cleanup_directory(frames_storage)
+    cleanup_directory(results_storage)
+    cleanup_directory(roi_frames_storage)
+    cleanup_directory(video_storage)
     return {"message": "Connected"}
 
 
