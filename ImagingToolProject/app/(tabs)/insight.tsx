@@ -136,30 +136,17 @@ export default function Insight() {
                     enableImageZoom={true}
                     saveToLocalByLongPress={false}
                   />
-                  <View className="absolute bottom-8 left-0 right-0 px-8">
-                    <TouchableOpacity
-                      className="bg-white rounded-lg shadow-lg"
-                      style={{
-                        padding: screenWidth * 0.04,
-                      }}
-                      onPress={() => setImageModalVisible(false)}
-                    >
-                      <Text
-                        className="text-black text-center font-semibold"
-                        style={{
-                          fontSize: screenWidth * 0.04,
-                        }}
-                      >
-                        Close
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                  {/* <TouchableOpacity
+                  <TouchableOpacity
                     onPress={() => setImageModalVisible(false)}
-                    className="absolute top-12 right-4 bg-black/50 rounded-full p-2"
+                    className="absolute top-14 right-4 bg-black/50 rounded-full p-2"
                   >
-                    <Text className="text-white font-bold text-lg">✕</Text>
-                  </TouchableOpacity> */}
+                    <Text
+                      className="text-white"
+                      style={{ fontSize: screenWidth * 0.04 }}
+                    >
+                      close
+                    </Text>
+                  </TouchableOpacity>
                 </View>
               </Modal>
 
