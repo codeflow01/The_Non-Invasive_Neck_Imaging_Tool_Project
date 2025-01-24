@@ -86,7 +86,7 @@ export default function BMICalculator() {
               value={height}
               onChangeText={setHeight}
               keyboardType="numeric"
-              placeholder="Enter height in cm"
+              // placeholder="Enter height in cm"
             />
           </View>
 
@@ -109,7 +109,7 @@ export default function BMICalculator() {
               value={weight}
               onChangeText={setWeight}
               keyboardType="numeric"
-              placeholder="Enter weight in kg"
+              // placeholder="Enter weight in kg"
             />
           </View>
 

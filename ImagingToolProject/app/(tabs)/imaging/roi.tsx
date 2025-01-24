@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
   LayoutChangeEvent,
 } from "react-native";
-import { useLocalSearchParams, router, useNavigation } from "expo-router";
+import { router, useNavigation } from "expo-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -25,8 +25,9 @@ interface DiagnosisResponse {
   success: boolean;
   videoName: string;
   results: {
-    displacement_plot: string;
-    registration_data: string;
+    displacement_plots: string;
+    registration_csv: string;
+    avg_csv: string;
   };
   message: string;
 }
@@ -46,7 +47,6 @@ export default function Roi() {
   const iconSize = screenWidth * 0.15;
   const modalPadding = screenWidth * 0.05;
 
-  const { roiFrame } = useLocalSearchParams();
   const [roi, setRoi] = useState<ROI | null>(null);
   const [showCompletionModal, setShowCompletionModal] = useState(false);
   const [diagnosisResult, setDiagnosisResult] =
@@ -123,8 +123,9 @@ export default function Roi() {
     router.replace({
       pathname: "/(tabs)/insight",
       params: {
-        plotUrl: diagnosisResult.results.displacement_plot,
-        registrationData: diagnosisResult.results.registration_data,
+        displacementPlotsUrl: diagnosisResult.results.displacement_plots,
+        regCsvUrl: diagnosisResult.results.registration_csv,
+        avgCsvUrl: diagnosisResult.results.avg_csv,
       },
     });
   };

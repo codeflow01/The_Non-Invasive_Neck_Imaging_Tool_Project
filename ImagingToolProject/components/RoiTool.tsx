@@ -86,16 +86,16 @@ export default function RoiTool({
     xOffset,
   } = getScaledDimensions();
 
-  // Convert screen coordinates to upload video coordinates
+  // convert screen coordinates to upload video coordinates
   const translateCoordinates = (x: number, y: number) => {
     const scaleX = videoWidth / displayWidth;
     const scaleY = videoHeight / displayHeight;
 
-    // Adjust for roiFrame centering
+    // adjust for roiFrame centering
     const adjustedX = x - imageLayout.x - xOffset;
     const adjustedY = y - imageLayout.y;
 
-    // Clamp coordinates to video dimensions
+    // clamp coordinates to video dimensions
     const translatedX = Math.max(
       0,
       Math.min(Math.round(adjustedX * scaleX), videoWidth)

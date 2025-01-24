@@ -14,8 +14,9 @@ import { useQuery } from "@tanstack/react-query";
 import ImageViewer from "react-native-image-zoom-viewer";
 
 interface Params {
-  plotUrl: string;
-  registrationData: string;
+  displacementPlotsUrl: string;
+  regCsvUrl: string;
+  avgCsvUrl: string;
 }
 
 export default function Insight() {
@@ -31,19 +32,24 @@ export default function Insight() {
   // ABI
   // const SERVER_URL = "http://172.23.23.251:8000";
 
-  const plotUrl = params.plotUrl;
-  const registrationData = params.registrationData;
+  const displacementPlotsUrl = params.displacementPlotsUrl;
+  const regCsvUrl = params.regCsvUrl;
+  const avgCsvUrl = params.avgCsvUrl;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["plot", plotUrl],
+  const displacementPlotsQuery = useQuery({
+    queryKey: ["oriPlot", displacementPlotsUrl],
     queryFn: async () => {
-      const timestamp = Date.now();
-      return `${SERVER_URL}${plotUrl}?t=${timestamp}`;
+      const url = `${SERVER_URL}${displacementPlotsUrl}`;
+      return url;
     },
-    enabled: plotUrl !== undefined,
+    enabled: displacementPlotsUrl !== undefined,
   });
 
-  const images = data ? [{ url: data }] : [];
+  const isLoading = displacementPlotsQuery.isLoading;
+
+  const images = displacementPlotsQuery.data
+    ? [{ url: displacementPlotsQuery.data }]
+    : [];
 
   const handleNavigateToImaging = () => {
     router.push("/(tabs)/imaging");
@@ -71,6 +77,7 @@ export default function Insight() {
           >
             Diagnosis Results
           </Text>
+
           {isLoading ? (
             <View className="items-center justify-center p-8">
               <ActivityIndicator size="large" color="#001e57" />
@@ -81,20 +88,29 @@ export default function Insight() {
                 Loading diagnosis results...
               </Text>
             </View>
-          ) : data ? (
+          ) : displacementPlotsQuery.data ? (
             <View>
               <TouchableOpacity
                 className="bg-gray-50 rounded-lg mb-4"
                 onPress={() => setImageModalVisible(true)}
               >
-                <Image
-                  source={{ uri: data }}
-                  style={{
-                    width: "100%",
-                    height: screenWidth * 0.6,
-                  }}
-                  resizeMode="contain"
-                />
+                <View className="mb-4">
+                  <Text
+                    className="text-gray-600 mb-4 mt-4 text-center"
+                    style={{ fontSize: screenWidth * 0.03 }}
+                  >
+                    Displacement Plots
+                  </Text>
+                  <Image
+                    source={{ uri: displacementPlotsQuery.data }}
+                    style={{
+                      width: "100%",
+                      height: screenWidth * 0.6,
+                    }}
+                    resizeMode="contain"
+                  />
+                </View>
+
                 <Text
                   className="text-gray-600 text-center mb-4"
                   style={{ fontSize: screenWidth * 0.03 }}
@@ -147,7 +163,7 @@ export default function Insight() {
                 </View>
               </Modal>
 
-              {registrationData && (
+              {(regCsvUrl || avgCsvUrl) && (
                 <View className="mt-4">
                   <TouchableOpacity
                     onPress={() => setModalVisible(true)}
@@ -178,7 +194,7 @@ export default function Insight() {
                           className="text-gray-600 text-center mb-4"
                           style={{ fontSize: screenWidth * 0.035 }}
                         >
-                          Detailed data has been exported to csv file
+                          Data sets have been exported to csv files
                         </Text>
                         <TouchableOpacity
                           className="bg-[#001e57] rounded-lg shadow-lg"
