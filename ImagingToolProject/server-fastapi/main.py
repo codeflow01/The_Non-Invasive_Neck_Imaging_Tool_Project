@@ -1,13 +1,14 @@
 from fastapi import FastAPI, APIRouter, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from diagnosis_cardiac import video_cardiac_analyze
+from diagnosis_cardiac import analyze_video_cardiac
 from fastapi.staticfiles import StaticFiles
 import os
 import shutil
 from pathlib import Path
 from dotenv import load_dotenv
 import cv2
+from utils import cleanup_directory
 
 
 load_dotenv()
@@ -29,7 +30,7 @@ app.add_middleware(
 )
 
 
-# Get current directory and setup storage paths
+# current directory and storage paths
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 roi_frames_storage = os.path.join(current_dir, "server-fastapi-roiFrames-storage")
@@ -38,7 +39,7 @@ results_storage = os.path.join(current_dir, "server-fastapi-results-storage")
 video_storage = os.path.join(current_dir, "server-fastapi-video-storage")
 
 
-# Mount the storage directories for static file serving
+# static file serving
 app.mount("/server-fastapi-roiFrames-storage", StaticFiles(directory=roi_frames_storage), name="roi_frames")
 app.mount("/server-fastapi-frames-storage", StaticFiles(directory=frames_storage), name="frames")
 app.mount("/server-fastapi-results-storage", StaticFiles(directory=results_storage), name="results")
@@ -48,18 +49,6 @@ app.mount("/server-fastapi-video-storage", StaticFiles(directory=video_storage),
 @app.get("/")
 async def root():
     return {"message": "Python FastAPI server is running!"}
-
-
-# clean up directory
-def cleanup_directory(directory_path):
-    if os.path.exists(directory_path):
-        for filename in os.listdir(directory_path):
-            file_path = os.path.join(directory_path, filename)
-            try:
-                if os.path.isfile(file_path):
-                    os.unlink(file_path)
-            except Exception as e:
-                print(f"Error deleting {file_path}: {e}")
 
 
 @router.post("/upload/video")
@@ -143,7 +132,7 @@ async def diagnose_cardiac(roi:dict):
             
         video_name = Path(video_files[0]).stem
         
-        success = await video_cardiac_analyze(
+        success = await analyze_video_cardiac(
             input_path=video_storage,
             frames_path=frames_storage,
             results_path=results_storage,
@@ -152,37 +141,31 @@ async def diagnose_cardiac(roi:dict):
         
         if success:
 
-            displacement_plot = f"total_displacement_plot_{video_name}.png"
-            registration_csv = f"registration_results_{video_name}.csv"
+            displacement_plots = f"cardiac_displacement_plots_{video_name}.png"
+            registration_csv = f"cardiac_registration_results_{video_name}.csv"
+            avg_csv = f"cardiac_avg_displacement_results_{video_name}.csv"
 
-            os.rename(
-                os.path.join(results_storage, "total_displacement_plot.png"),
-                os.path.join(results_storage, displacement_plot)
-            )
-            os.rename(
-                os.path.join(results_storage, "registration_results.csv"),
-                os.path.join(results_storage, registration_csv)
-            )
+            # log path
+            plot_path = os.path.join(results_storage, displacement_plots)
+            print(f"(∆π∆) Plot path exists: {os.path.exists(plot_path)}")
+            print(f"(∆π∆) Full plot URL: /server-fastapi-results-storage/{displacement_plots}")
 
             return {
                 "success": True,
                 "videoName": video_name,
                 "results": {
-                    "displacement_plot": f"/server-fastapi-results-storage/{displacement_plot}",
-                    "registration_data": f"/server-fastapi-results-storage/{registration_csv}"
+                    "displacement_plots": f"/server-fastapi-results-storage/{displacement_plots}",
+                    "registration_csv": f"/server-fastapi-results-storage/{registration_csv}",
+                    "avg_csv": f"/server-fastapi-results-storage/{avg_csv}"
                 }
             }
         else:
             return {"success": False, "message": "Analysis failed"}
     
     except Exception as e:
-        print(f"Error in diagnosis endpoint: {e}")
-        import traceback
-        traceback.print_exc()
         return {"success": False, "message": {e}}
 
 
-# For REST API Testing
 @router.get("/api")
 async def api_endpoint():
     cleanup_directory(frames_storage)

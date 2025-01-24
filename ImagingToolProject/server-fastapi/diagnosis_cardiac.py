@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import csv
 import os
 from pathlib import Path
 from typing import List
@@ -24,25 +23,26 @@ class VideoProcess:
         self.roi = None
         self.actual_width = None
         self.actual_height = None
+        self.fps = None
     
-    def load_video(self) -> bool:
+    def load_video(self):
         self.cap = cv2.VideoCapture(self.video_path)
         if not self.cap.isOpened():
             raise ValueError(f"Error: Could not open video file {self.video_path}")
         
-        # Store upload video dimensions
+        # store upload video dimensions
         self.actual_width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.actual_height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
+        
         self.frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
-        return True
+        self.fps = self.cap.get(cv2.CAP_PROP_FPS)       
     
     def set_roi(self, x: int, y: int, width: int, height: int):
 
         if self.actual_width is None or self.actual_height is None:
             raise ValueError("Video must be loaded before setting ROI")
             
-        # Validate and clamp coordinates to video dimensions
+        # validate and clamp coordinates to video dimensions
         x = max(0, min(x, self.actual_width))
         y = max(0, min(y, self.actual_height))
         width = min(width, self.actual_width - x)
@@ -77,185 +77,217 @@ class VideoProcess:
 class ImageRegistration:
     def __init__(self, frames: List[np.ndarray]):
         self.frames = frames
-        self.intensities = []
         self.registration_results = []
         self.registration_locations = []
 
-    def register_frames(self, frames_dir: str, results_dir: str) -> bool:
+    def register_frames(self, frames_dir: str):
         frame_files = sorted([f for f in os.listdir(frames_dir) 
                             if f.startswith("frame_") and f.endswith(".png")])
-        print(f"(∆π∆) Total number of frames decomposed: {len(frame_files)}")
+        
+        print(f"(∆π∆)\nTotal number of frames decomposed: {len(frame_files)}\n(∆π∆)")
 
         if len(frame_files) < 2:
             print("Not enough frames to perform registration. Exiting...")
+            return None
+
+        reference_path = os.path.join(frames_dir, frame_files[1])
+        reference_frame = cv2.imread(reference_path)
+
+        if reference_frame is None:
+            print(f"Failed to load reference frame: {reference_path}")
             return False
 
-        results_csv_path = os.path.join(results_dir, "registration_results.csv")
-        with open(results_csv_path, "w", newline="") as csvfile:
-            csv_writer = csv.writer(csvfile)
-            csv_writer.writerow(["Frame", "Loc_Y", "Loc_X", "Disp_Y", "Disp_X"])
+        for i, frame in enumerate(frame_files[1:]):
+            current_frame = cv2.imread(os.path.join(frames_dir, frame))
 
-            reference_path = os.path.join(frames_dir, frame_files[1])
-            reference_frame = cv2.imread(reference_path)
+            if current_frame is None:
+                print(f"Failed to load frame: {frame}")
+                continue
 
-            if reference_frame is None:
-                print(f"Failed to load reference frame: {reference_path}")
-                return False
+            try:
+                results, locs = register_images(
+                    im1=reference_frame,
+                    im2=current_frame,
+                    plot=False,
+                    threads=cpu_count() - 2,
+                    stride=15,
+                    windowsize=64,
+                    thresh=10
+                )
 
-            for i, frame in enumerate(frame_files[1:]):
-                current_frame = cv2.imread(os.path.join(frames_dir, frame))
+                self.registration_results.append((i, results))
+                self.registration_locations.append(locs)
 
-                if current_frame is None:
-                    print(f"Failed to load frame: {frame}")
-                    continue
+            except Exception as e:
+                print(f"Error during registration of frame {i}: {e}")
+                continue
 
-                try:
-                    results, locs = register_images(
-                        im1=reference_frame,
-                        im2=current_frame,
-                        plot=False,
-                        threads=cpu_count() - 2,
-                        stride=15,
-                        windowsize=64,
-                        thresh=10
-                    )
-
-                    for j in range(len(results)):
-                        csv_writer.writerow([
-                            i,
-                            locs[j][1],
-                            locs[j][0],
-                            results[j][0][0],
-                            results[j][0][1]
-                        ])
-
-                    self.registration_results.append(results)
-                    self.registration_locations.append(locs)
-
-                except Exception as e:
-                    print(f"Error during registration of frame {i}: {e}")
-                    continue
-
-        return True
+        return self.registration_results, self.registration_locations
     
+
+class ImgRegDataProcess:
+    def __init__(self, fps: float):
+        self.fps = fps
+        self.registration_df = None
+        self.avg_displacement_df = None
+
+    def process_displacement(self, registration_results: List, registration_locations: List):
+        try:
+            registration_data_list = []
+            for frame_num, results in registration_results:
+                locs = registration_locations[frame_num]
+                for j in range(len(results)):
+                    registration_data_list.append({
+                        "Frame": frame_num,
+                        "Loc_Y": locs[j][1],
+                        "Loc_X": locs[j][0],
+                        "Disp_Y": results[j][0][0],
+                        "Disp_X": results[j][0][1]
+                    })
+
+            self.registration_df = pd.DataFrame(registration_data_list)
+            
+            self.registration_df["Total_Displacement"] = np.sqrt(
+                self.registration_df["Disp_X"] ** 2 + self.registration_df["Disp_Y"] ** 2
+            )
+            
+            self.avg_displacement_df = self.registration_df.groupby("Frame")[["Total_Displacement"]].mean().reset_index()
+            
+            return True
+        
+        except Exception as e:
+            print(f"Error calculating displacement: {e}")
+            return False
+
+    def save_to_csv(self, results_dir: str, video_name: str):
+        try:
+            if self.registration_df is None or self.avg_displacement_df is None:
+                raise ValueError("Please process displacement first")
+
+            registration_results_filename = f"cardiac_registration_results_{video_name}.csv"
+            self.registration_df.to_csv(
+                os.path.join(results_dir, registration_results_filename),
+                index=False
+            )
+
+            self.avg_displacement_df["Time(s)"] = self.avg_displacement_df["Frame"] / self.fps
+
+            avg_displacement_results_filename = f"cardiac_avg_displacement_results_{video_name}.csv"
+            self.avg_displacement_df.to_csv(
+                os.path.join(results_dir, avg_displacement_results_filename),
+                index=False
+            )
+
+            return True
+        
+        except Exception as e:
+            print(f"Error saving data: {e}")
+            return False
+
 
 class DataVisualization:
-    def __init__(self, results_dir: str):
-        self.results_dir = results_dir
-        self.csv_path = os.path.join(results_dir, "registration_results.csv")
-        self.data = None
+    def __init__(self, data_process_exe: ImgRegDataProcess):
+        self.data_process_exe = data_process_exe
 
-    def load_data(self) -> bool:
+    def create_plots(self, results_dir: str, video_name: str) -> bool:
+        if self.data_process_exe.registration_df is None or self.data_process_exe.avg_displacement_df is None:
+            print("No data available for plotting")
+            return False
+
         try:
-            self.data = pd.read_csv(self.csv_path)
-            self.data["Total_Displacement"] = np.sqrt(
-                self.data["Disp_X"] ** 2 + self.data["Disp_Y"] ** 2
-            )
-            print(f"(∆π∆) Data loaded, shape: {self.data.shape}")
+            fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 12))
+
+            # Plot 1: All grid points
+            unique_points = self.data_process_exe.registration_df.groupby(["Loc_Y", "Loc_X"])
+            num_points = len(unique_points)
+            for (loc_y, loc_x), group in unique_points:
+                ax1.plot(group["Frame"], group["Total_Displacement"], "-", alpha=0.5,
+                        label=f"Point ({loc_y}, {loc_x})")
+                
+            ax1.set_xlabel("Frame Number")
+            ax1.set_ylabel("Total Displacement (pixels)")
+            ax1.set_title(f"Total Displacement for {num_points} Grid Points")
+            ax1.grid(True)
+
+            # Plot 2: Average displacement
+            ax2.plot(self.data_process_exe.avg_displacement_df["Time(s)"],
+                    self.data_process_exe.avg_displacement_df["Total_Displacement"],
+                    '-', linewidth=2, color='blue')
+            
+            start_time = self.data_process_exe.avg_displacement_df["Time(s)"].min()
+            end_time = self.data_process_exe.avg_displacement_df["Time(s)"].max()
+            ax2.set_xticks(np.arange(start_time, end_time + 0.1, 0.1))
+
+            ax2.set_xlabel("Time (seconds)")
+            ax2.set_ylabel("Average Displacement (pixels)")
+            ax2.set_title("Average Displacement over Time")
+            ax2.grid(True)
+
+            plt.tight_layout()
+            displacement_plot_filename = f"cardiac_displacement_plots_{video_name}.png"
+            fig.savefig(os.path.join(results_dir, displacement_plot_filename))
+            plt.close('all')
             return True
+
         except Exception as e:
-            print(f"Error loading CSV data: {e}")
+            print(f"Error creating plots: {e}")
             return False
     
-    def plot_displacements(self) -> bool:
-        if self.data is None:
-            print("No data loaded. Please load data first.")
-            return False
 
-        try:
-            unique_points = self.data.groupby(["Loc_Y", "Loc_X"])
-            num_points = len(unique_points)
-            print(f"(∆π∆) Number of grid points: {num_points}")
-
-            plt.figure(figsize=(12, 6))
-            for (loc_y, loc_x), group in unique_points:
-                plt.plot(group["Frame"], group["Total_Displacement"], "-", alpha=0.5,
-                        label=f"Point ({loc_y}, {loc_x})")
-
-            plt.xlabel('Frame Number')
-            plt.ylabel('Total Displacement (pixels)')
-            plt.title(f'Total Displacement over Frames for {num_points} Grid Points')
-            plt.grid(True)
-            plt.tight_layout()
-
-            plot_path = os.path.join(self.results_dir, "total_displacement_plot.png")
-            plt.savefig(plot_path)
-            plt.close()
-            return True
-        except Exception as e:
-            print(f"Error creating displacement plot: {e}")
-            return False
-
-async def process_video_sync(input_folder_path: str, frames_storage_path: str, results_storage_path: str, roi: dict=None) -> bool:
-    print(f"(∆π∆) Starting video processing:")
-    print(f"(∆π∆) Input folder: {input_folder_path}")
-    print(f"(∆π∆) Frames storage: {frames_storage_path}")
-    print(f"(∆π∆) Results storage: {results_storage_path}")
-    print(f"(∆π∆) ROI: {roi}")
+async def process_video(input_folder_path: str, frames_storage_path: str, results_storage_path: str, roi: dict=None) -> bool:
 
     try:
-
-        print("\n=== Starting Video Processing ===")
-        print(f"1. Received ROI coordinates - x:{roi['x']}, y:{roi['y']}, width:{roi['width']}, height:{roi['height']}")
-
-
+        print(f"(∆π∆)\nReceived ROI coordinates - x:{roi['x']}, y:{roi['y']}, width:{roi['width']}, height:{roi['height']}\n(∆π∆)")
 
         video_files = [f for f in os.listdir(input_folder_path) 
                       if f.lower().endswith(('.mp4', '.avi', '.mov'))]
        
-        print(f"(∆π∆) Found video files: {video_files}") 
-
         if not video_files:
             raise ValueError(f"No video files found in {input_folder_path}")
 
         video_path = os.path.join(input_folder_path, video_files[0])
         video_name = Path(video_files[0]).stem
 
-        print(f"(∆π∆) Processing video: {video_path}")
+        video_process_exe = VideoProcess(video_path)
+        video_process_exe.load_video()
 
-        # Decompose video into frames
-        print("(∆π∆) Initializing video processor")
-        processor = VideoProcess(video_path)
-        print("(∆π∆) Loading video")
-        processor.load_video()
         if roi:
-            processor.set_roi(
+            video_process_exe.set_roi(
                 int(roi["x"]), 
                 int(roi["y"]), 
                 int(roi["width"]), 
                 int(roi["height"])
             )
             
-        print("(∆π∆) Extracting frames")
-        frames = processor.extract_frames(frames_storage_path)
-        print(f"(∆π∆) Extracted {len(frames)} frames")
+        frames = video_process_exe.extract_frames(frames_storage_path)
 
-        # Image registration
-        print("(∆π∆) Starting image registration")
-        analyzer = ImageRegistration(frames)
-        registration_success = analyzer.register_frames(frames_storage_path, results_storage_path)
-        print(f"(∆π∆) Registration complete. Success: {registration_success}")
+        analysis_exe = ImageRegistration(frames)
+        registration_results, registration_locations = analysis_exe.register_frames(frames_storage_path)
 
-        if not registration_success:
-            print("(∆π∆) Error: Registration failed")
+        if not registration_results or not registration_locations:
             return False
 
-        # Visualize results
-        print("(∆π∆) Starting visualization")
-        visualizer = DataVisualization(results_storage_path)
-        
-        if visualizer.load_data():
-            visualizer.plot_displacements()
+        data_process_exe = ImgRegDataProcess(video_process_exe.fps)
+        if not data_process_exe.process_displacement(registration_results, registration_locations):
+            return False
+            
+        if not data_process_exe.save_to_csv(results_storage_path, video_name):
+            return False
+
+        visualise_exe = DataVisualization(data_process_exe)
+        if not visualise_exe.create_plots(results_storage_path, video_name):
+            return False
 
         return True
+        
     except Exception as e:
         print(f"Error during video analysis: {e}")
         return False
 
 
-async def video_cardiac_analyze(input_path: str, frames_path: str, results_path: str, roi: dict = None) -> bool:
+async def analyze_video_cardiac(input_path: str, frames_path: str, results_path: str, roi: dict = None) -> bool:
     try:
-        result = await process_video_sync(input_path, frames_path, results_path, roi)
+        result = await process_video(input_path, frames_path, results_path, roi)
         return result
     except Exception as e:
         print(f"Error in video cardiac analyze: {e}")
