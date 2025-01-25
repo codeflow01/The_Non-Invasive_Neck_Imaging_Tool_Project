@@ -7,6 +7,7 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEvent } from "expo";
 import { useMutation } from "@tanstack/react-query";
+import { useRoiBridge } from "../../../components/RoiBridge";
 
 interface UploadResponse {
   success: boolean;
@@ -54,7 +55,7 @@ export default function Picker() {
   // const SERVER_URL = "http://172.23.23.251:8000";
 
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
-  const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  // const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [showCompletionModal, setShowCompletionModal] =
     useState<boolean>(false);
   const [diagnosisResult, setDiagnosisResult] =
@@ -63,17 +64,6 @@ export default function Picker() {
   const [showRoiSelection, setShowRoiSelection] = useState(false);
   const [roi, setRoi] = useState<ROI | null>(null);
   const [isVideoConfirmed, setIsVideoConfirmed] = useState(false);
-
-  // const { selectedRoi } = useLocalSearchParams<{ selectedRoi?: string }>();
-
-  // useEffect(() => {
-  //   if (selectedRoi) {
-  //     const parsedRoi = JSON.parse(selectedRoi);
-  //     setRoi(parsedRoi);
-  //     // Trigger diagnosis
-  //     handleRoiSelected(parsedRoi);
-  //   }
-  // }, [selectedRoi]);
 
   const player = useVideoPlayer(videoUri || "", (player) => {
     if (player) {
@@ -113,40 +103,40 @@ export default function Picker() {
     }
   };
 
-  const videoUploadMutation = useMutation({
-    mutationFn: async (videoUri: string) => {
-      const formData = new FormData();
-      const videoUpload: VideoUpload = {
-        uri: videoUri,
-        type: "video",
-        name: `${Date.now()}.mp4`,
-      };
-      formData.append("video", videoUpload as any);
+  // const videoUploadMutation = useMutation({
+  //   mutationFn: async (videoUri: string) => {
+  //     const formData = new FormData();
+  //     const videoUpload: VideoUpload = {
+  //       uri: videoUri,
+  //       type: "video",
+  //       name: `${Date.now()}.mp4`,
+  //     };
+  //     formData.append("video", videoUpload as any);
 
-      const response = await fetch(`${SERVER_URL}/upload/video`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        body: formData,
-      });
-      if (!response.ok) {
-        throw new Error("Failed to upload video");
-      }
-      return response.json() as Promise<UploadResponse>;
-    },
-  });
+  //     const response = await fetch(`${SERVER_URL}/upload/video`, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //       body: formData,
+  //     });
+  //     if (!response.ok) {
+  //       throw new Error("Failed to upload video");
+  //     }
+  //     return response.json() as Promise<UploadResponse>;
+  //   },
+  // });
 
-  const roiFrameMutation = useMutation({
-    mutationFn: async () => {
-      const response = await fetch(`${SERVER_URL}/video/roi-frame`);
-      if (!response.ok) {
-        throw new Error("Failed to get ROI frame");
-      }
-      const result = await response.json();
-      return result as ROIFrame;
-    },
-  });
+  // const roiFrameMutation = useMutation({
+  //   mutationFn: async () => {
+  //     const response = await fetch(`${SERVER_URL}/video/roi-frame`);
+  //     if (!response.ok) {
+  //       throw new Error("Failed to get ROI frame");
+  //     }
+  //     const result = await response.json();
+  //     return result as ROIFrame;
+  //   },
+  // });
 
   // const diagnosisMutation = useMutation({
   //   mutationFn: async (roi: ROI) => {
@@ -164,35 +154,41 @@ export default function Picker() {
   //   },
   // });
 
-  const handleVideoAndRoiFrame = async () => {
-    if (!videoUri) {
-      alert("Please select a video first");
-      return;
-    }
-    try {
-      setIsProcessing(true);
-      const uploadResult = await videoUploadMutation.mutateAsync(videoUri!);
-      if (uploadResult.success) {
-        const roiFrameResult = await roiFrameMutation.mutateAsync();
-        if (roiFrameResult.success) {
-          router.push({
-            pathname: "./roi",
-            params: {
-              videoUri: videoUri,
-              roiFrame: `${SERVER_URL}${roiFrameResult.roiFrame}`,
-              screenWidth: screenWidth,
-              screenHeight: screenHeight,
-            },
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Error processing video. Please try again.");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  const { handleRoiFrame, isProcessing } = useRoiBridge({
+    SERVER_URL,
+    videoUri: videoUri!,
+    onError: (error) => alert("Error processing video. Please try again."),
+  });
+
+  // const handleVideoAndRoiFrame = async () => {
+  //   if (!videoUri) {
+  //     alert("Please select a video first");
+  //     return;
+  //   }
+  //   try {
+  //     setIsProcessing(true);
+  //     const uploadResult = await videoUploadMutation.mutateAsync(videoUri!);
+  //     if (uploadResult.success) {
+  //       const roiFrameResult = await roiFrameMutation.mutateAsync();
+  //       if (roiFrameResult.success) {
+  //         router.push({
+  //           pathname: "./roi",
+  //           params: {
+  //             videoUri: videoUri,
+  //             roiFrame: `${SERVER_URL}${roiFrameResult.roiFrame}`,
+  //             screenWidth: screenWidth,
+  //             screenHeight: screenHeight,
+  //           },
+  //         });
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //     alert("Error processing video. Please try again.");
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
 
   // const handleRoiSelected = async (selectedRoi: ROI) => {
   //   try {
@@ -238,7 +234,7 @@ export default function Picker() {
 
           <View className="" style={{ padding: screenWidth * 0.04 }}>
             <TouchableOpacity
-              onPress={handleVideoAndRoiFrame}
+              onPress={handleRoiFrame}
               disabled={isProcessing}
               className="items-center bg-[#001e57] rounded-lg p-5 shadow-lg"
             >
@@ -313,7 +309,6 @@ export default function Picker() {
               </TouchableOpacity>
             </View>
           </Modal> */}
-
         </View>
       </SafeAreaView>
     );
