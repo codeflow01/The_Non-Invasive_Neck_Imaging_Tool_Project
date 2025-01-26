@@ -207,7 +207,6 @@ export default function RoiTool({
           style={{
             width: displayWidth,
             height: displayHeight,
-            marginLeft: xOffset,
           }}
         />
         {isDrawing && <RoiRect roi={roi} isDrawing={true} />}
@@ -216,7 +215,10 @@ export default function RoiTool({
         )}
       </View>
 
-      <View className="absolute top-4 left-0 right-0 items-center">
+      <View
+        className="absolute top-4 left-0 right-0 items-center"
+        style={{ marginLeft: xOffset + 105 }}
+      >
         <View className="bg-black/50 px-4 py-2 rounded-lg">
           <Text className="text-white text-base">
             {completedRoi
