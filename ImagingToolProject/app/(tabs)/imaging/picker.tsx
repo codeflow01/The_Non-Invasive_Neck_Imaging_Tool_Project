@@ -263,7 +263,7 @@ export default function Picker() {
             />
           )} */}
 
-          {isProcessing && (
+          {/* {isProcessing && (
             <View className="flex-1 justify-center items-center p-4 bg-black/50">
               <Text
                 className="text-white text-center"
@@ -278,7 +278,7 @@ export default function Picker() {
                   : "Diagnosing..."}
               </Text>
             </View>
-          )}
+          )} */}
 
           {/* <Modal
             transparent={true}

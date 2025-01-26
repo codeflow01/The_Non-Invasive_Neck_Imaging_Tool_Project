@@ -15,7 +15,7 @@ export interface RoiFrame {
   message: string;
 }
 
-export interface RoiBridgeProcess {
+export interface RoiBridgeProps {
   SERVER_URL: string;
   videoUri: string;
   onError: (error: Error) => void;
@@ -25,7 +25,7 @@ export const useRoiBridge = ({
   SERVER_URL,
   videoUri,
   onError,
-}: RoiBridgeProcess) => {
+}: RoiBridgeProps) => {
   const videoUploadMutation = useMutation({
     mutationFn: async (uri: string) => {
       const formData = new FormData();

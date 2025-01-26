@@ -28,6 +28,8 @@ import {
   GestureDetector,
 } from "react-native-gesture-handler";
 
+import { useRoiBridge } from "../../../hooks/useRoiBridge";
+
 import { Button, Text, TouchableOpacity, View } from "react-native";
 import * as FileSystem from "expo-file-system";
 
@@ -90,6 +92,8 @@ const ZoomSlider = ({ value, onValueChange }: ZoomSliderProps) => {
 };
 
 export default function Camera() {
+  const SERVER_URL = "http://192.168.1.19:8000";
+
   let cameraRef = useRef<CameraView>(null);
   const [facing, setFacing] = useState<"front" | "back">("front");
   const [elapsedTime, setElapsedTime] = useState<number>(0);
@@ -115,6 +119,15 @@ export default function Camera() {
 
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
+
+  const { handleRoiFrame, isProcessing } = useRoiBridge({
+    SERVER_URL,
+    videoUri: videoUri || "",
+    onError: (error) => {
+      console.error("ROI Bridge error:", error);
+      alert("Error processing video. Please try again.");
+    },
+  });
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -303,6 +316,14 @@ export default function Camera() {
       }, 300);
     };
 
+    let processVideo = async () => {
+      if (!videoUri) {
+        alert("No video recorded");
+        return;
+      }
+      await handleRoiFrame();
+    };
+
     // let saveVideo = async () => {
     //   console.log("(∆π∆) Saving video...");
     //   const fileInfo = await FileSystem.getInfoAsync(videoUri);
@@ -350,7 +371,7 @@ export default function Camera() {
           allowsPictureInPicture
         />
 
-        <Button
+        {/* <Button
           title={isPlaying ? "Pause" : "Play"}
           onPress={() => {
             if (isPlaying) {
@@ -359,7 +380,7 @@ export default function Camera() {
               player.play();
             }
           }}
-        />
+        /> */}
 
         <Button title="Share" onPress={shareVideo} />
 
@@ -367,7 +388,13 @@ export default function Camera() {
           <Button title="Save" onPress={saveVideo} />
         ) : undefined} */}
 
-        <Button title="Camera" onPress={recordAgain} />
+        {/* <Button title="Camera" onPress={recordAgain} /> */}
+
+        <Button
+          title={isProcessing ? "Processing..." : "Confirm and Draw ROI"}
+          onPress={processVideo}
+          disabled={isProcessing}
+        />
       </SafeAreaView>
     );
   }
