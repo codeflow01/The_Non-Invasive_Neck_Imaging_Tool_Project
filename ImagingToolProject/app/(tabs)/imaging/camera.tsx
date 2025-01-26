@@ -15,6 +15,8 @@ import { useState, useEffect, useRef } from "react";
 import { useEvent } from "expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dimensions } from "react-native";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 import Animated, {
   useAnimatedStyle,
@@ -75,7 +77,7 @@ const ZoomSlider = ({ value, onValueChange }: ZoomSliderProps) => {
   }));
 
   return (
-    <View className="absolute bottom-4 left-20 right-20">
+    <View className="absolute bottom-40 left-20 right-20">
       <View className="h-8 justify-center">
         <View className="h-0.5 bg-white rounded-full" />
         <GestureDetector gesture={panGesture}>
@@ -401,31 +403,6 @@ export default function Camera() {
             </Text>
           </TouchableOpacity>
         </View>
-
-        {/* <Button
-          title={isPlaying ? "Pause" : "Play"}
-          onPress={() => {
-            if (isPlaying) {
-              player.pause();
-            } else {
-              player.play();
-            }
-          }}
-        /> */}
-
-        {/* <Button title="Share" onPress={shareVideo} /> */}
-
-        {/* {hasMediaLibPermission ? (
-          <Button title="Save" onPress={saveVideo} />
-        ) : undefined} */}
-
-        {/* <Button title="Camera" onPress={recordAgain} /> */}
-
-        {/* <Button
-          title={isProcessing ? "Processing..." : "Confirm and Draw ROI"}
-          onPress={processVideo}
-          disabled={isProcessing}
-        /> */}
       </SafeAreaView>
     );
   }
@@ -433,7 +410,6 @@ export default function Camera() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <View className="flex-1">
-        {/* <View className="h-3/6 w-full"> */}
         <View className="relative flex-1">
           <CameraView
             style={{ flex: 1 }}
@@ -448,7 +424,109 @@ export default function Camera() {
             zoom={zoom}
           />
 
+          <View className="absolute inset-0 flex-1">
+            <View className="mt-40 px-32 pr-2" style={{ gap: 40 }}>
+              {/* <TouchableOpacity
+                className=" py-2 rounded-lg items-end"
+                onPress={toggleCameraFacing}
+              >
+                <Text className="text-[#001e57] font-semibold">
+                  CAMERA: {facing === "front" ? "FRONT" : "BACK"}
+                </Text>
+              </TouchableOpacity> */}
+
+              <TouchableOpacity
+                className="py-2 rounded-lg items-end"
+                onPress={toggleCameraFacing}
+              >
+                <Ionicons
+                  name={facing === "front" ? "camera-reverse" : "camera"}
+                  size={40}
+                  color="#ffffff"
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className=" py-2 rounded-lg items-end"
+                onPress={toggleVideoQuality}
+              >
+                <Text
+                  className="text-[#ffffff] font-semibold"
+                  style={{ fontSize: 16 }}
+                >
+                  {videoQuality.toUpperCase()}
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className=" py-2 rounded-lg items-end "
+                onPress={toggleFlash}
+              >
+                <Ionicons
+                  name={
+                    flashMode === "off" ? "flashlight-outline" : "flashlight"
+                  }
+                  size={35}
+                  color="#ffffff"
+                />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="py-2 rounded-lg items-end"
+                onPress={toggleMute}
+              >
+                <Ionicons
+                  name={isMuted ? "volume-mute" : "volume-mute-outline"}
+                  size={35}
+                  color="#ffffff"
+                />
+              </TouchableOpacity>
+
+              {/* <TouchableOpacity
+                className="py-2 rounded-lg items-end"
+                onPress={toggleStabilization}
+              >
+                <Text className="text-[#001e57] font-semibold">
+                  STABILIZATION: {stabilizationMode.toUpperCase()}
+                </Text>
+              </TouchableOpacity> */}
+
+              <TouchableOpacity
+                className="py-2 rounded-lg items-end"
+                onPress={toggleAutofocus}
+              >
+                <Ionicons
+                  name={
+                    isAutofocusEnabled === "off"
+                      ? "scan-circle"
+                      : "scan-circle-outline"
+                  }
+                  size={40}
+                  color="#ffffff"
+                />
+
+                {/* <Text className="text-[#001e57] font-semibold">
+                  AUTO FOCUS: {isAutofocusEnabled === "off" ? "OFF" : "ON"}
+                </Text> */}
+              </TouchableOpacity>
+            </View>
+          </View>
+
           <ZoomSlider value={zoom} onValueChange={setZoom} />
+
+          <View className="absolute bottom-10 left-20 right-20">
+            <TouchableOpacity
+              className="bg-red-500/80 px-4 py-2 rounded-lg items-center"
+              onPress={isRecording ? stopRecording : recordVideo}
+            >
+              <Text
+                className="text-white font-semibold"
+                style={{ fontSize: 16 }}
+              >
+                {isRecording ? "STOP RECORDING" : "RECORD VIDEO"}
+              </Text>
+            </TouchableOpacity>
+          </View>
 
           {isRecording && (
             <View className="absolute top-20 w-full items-center">
@@ -460,100 +538,7 @@ export default function Camera() {
             </View>
           )}
         </View>
-
-        {/* <TouchableOpacity
-          className="bg-gray-400 px-6 py-3 mt-1 mb-1 ml-36 mr-36 rounded-lg items-center"
-          onPress={toggleCameraFacing}
-        >
-          <Text className="text-red-700 font-semibold text-lg">
-            {facing === "front" ? "Back Camera" : "Front Camera"}
-          </Text>
-        </TouchableOpacity>
-        
-        </CameraView> */}
-
-        {/* <View className="flex-1 justify-center items-end">
-        <Button
-          title={isRecording ? "Stop Recording" : "Record Video"}
-          onPress={isRecording ? stopRecording : recordVideo}
-        /> */}
-
-        <View className="">
-          <TouchableOpacity
-            className="bg-gray-400 px-6 py-3 mt-1 mb-1 ml-28 mr-28 rounded-lg items-center"
-            onPress={toggleCameraFacing}
-          >
-            <Text className="text-[#001e57] font-semibold text-lg">
-              CAMERA: {facing === "front" ? "FRONT" : "BACK"}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
-            onPress={toggleVideoQuality}
-          >
-            <Text className="text-[#001e57] font-semibold text-lg">
-              QUALITY: {videoQuality.toUpperCase()}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
-            onPress={toggleFlash}
-          >
-            <Text className="text-[#001e57] font-semibold text-lg">
-              FLASH: {flashMode === "off" ? "OFF" : "ON"}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
-            onPress={toggleMute}
-          >
-            <Text className="text-[#001e57] font-semibold text-lg">
-              MUTE: {isMuted ? "ON" : "OFF"}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
-            onPress={toggleStabilization}
-          >
-            <Text className="text-[#001e57] font-semibold text-lg">
-              STABILIZATION: {stabilizationMode.toUpperCase()}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
-            onPress={toggleAutofocus}
-          >
-            <Text className="text-[#001e57] font-semibold text-lg">
-              AUTO FOCUS: {isAutofocusEnabled === "off" ? "OFF" : "ON"}
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            className="bg-gray-400 px-6 py-3 mb-1 ml-28 mr-28 rounded-lg items-center"
-            onPress={isRecording ? stopRecording : recordVideo}
-          >
-            <Text className="text-zinc-50 font-semibold text-lg">
-              {isRecording ? "STOP RECORDING" : "RECORD VIDEO"}
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </GestureHandlerRootView>
   );
 }
-
-//   return (
-//     <View>
-//       <Text>Modal Content</Text>
-//       {/* <Button
-//         onPress={() => router.back()}
-//         title="Close Modal"
-//       /> */}
-//     </View>
-//   );
-// }
