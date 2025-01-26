@@ -193,7 +193,7 @@ export default function RoiTool({
   };
 
   return (
-    <View className="flex-1 relative bg-black">
+    <View className="flex-1 relative bg-gray-100">
       <View
         className="flex-1 justify-center items-center"
         onLayout={(event: LayoutChangeEvent) => {
@@ -217,7 +217,7 @@ export default function RoiTool({
 
       <View
         className="absolute top-4 left-0 right-0 items-center"
-        style={{ marginLeft: xOffset + 105 }}
+        style={{ marginLeft: xOffset + 102 }}
       >
         <View className="bg-black/50 px-4 py-2 rounded-lg">
           <Text className="text-white text-base">
