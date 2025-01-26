@@ -166,13 +166,13 @@ async def diagnose_cardiac(roi:dict):
         return {"success": False, "message": {e}}
 
 
-@router.get("/api")
-async def api_endpoint():
+@router.get("/cleanup_server_storage")
+async def cleanup_endpoint():
     cleanup_directory(frames_storage)
     cleanup_directory(results_storage)
     cleanup_directory(roi_frames_storage)
     cleanup_directory(video_storage)
-    return {"message": "Connected"}
+    return {"message": "All Server Storage Cleaned Up!"}
 
 
 app.include_router(router)

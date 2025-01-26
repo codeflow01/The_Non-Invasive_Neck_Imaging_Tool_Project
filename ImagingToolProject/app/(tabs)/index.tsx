@@ -18,12 +18,14 @@ export default function Index() {
   const containerWidth = screenWidth * 0.85;
 
   const { data, isLoading, error, refetch } = useQuery({
-    queryKey: ["apiMessage"],
+    queryKey: ["cleanupMessage"],
     queryFn: async () => {
       // ABI
       // const response = await fetch("http://172.23.23.251:8000/api");
       // VIC
-      const response = await fetch("http://192.168.1.19:8000/api");
+      const response = await fetch(
+        "http://192.168.1.19:8000/cleanup_server_storage"
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -34,7 +36,7 @@ export default function Index() {
 
   const handlePress = () => {
     if (isPressed) {
-      queryClient.removeQueries({ queryKey: ["apiMessage"] });
+      queryClient.removeQueries({ queryKey: ["cleanupMessage"] });
       setShowResult(false);
     } else {
       setShowResult(true);
@@ -46,7 +48,7 @@ export default function Index() {
   return (
     <ScrollView contentContainerStyle={{ flex: 1 }}>
       <View
-        className="flex-1 items-center justify-center bg-gray-100"
+        className="flex-1 items-center justify-end mb-20 bg-gray-100"
         style={{ padding: screenWidth * 0.08 }}
       >
         <View
@@ -56,24 +58,24 @@ export default function Index() {
             padding: screenWidth * 0.05,
           }}
         >
-          <Text
+          {/* <Text
             className="font-bold text-center text-[#001e57]"
             style={{
               fontSize: screenWidth * 0.06,
               marginBottom: screenHeight * 0.02,
             }}
           >
-            Test UI
-          </Text>
+            Clean Server Storage
+          </Text> */}
 
           <TouchableOpacity
             onPress={handlePress}
-            className={`items-center rounded-lg shadow-lg ${
-              isPressed ? "bg-red-600" : "bg-[#001e57]"
+            className={`items-center rounded-lg ${
+              isPressed ? "bg-gray-600" : "bg-[#001e57]"
             }`}
             style={{
               padding: screenWidth * 0.04,
-              marginBottom: screenHeight * 0.02,
+              // marginBottom: screenHeight * 0.02,
             }}
           >
             <Text
@@ -82,7 +84,7 @@ export default function Index() {
                 fontSize: screenWidth * 0.04,
               }}
             >
-              {isPressed ? "Test Again" : "Test REST API Connection"}
+              {isPressed ? "Clean Again" : "Clean Up Server Storage"}
             </Text>
           </TouchableOpacity>
 
@@ -118,7 +120,7 @@ export default function Index() {
                 marginTop: screenHeight * 0.02,
               }}
             >
-              REST API Status: {data.message}
+              {data.message}
             </Text>
           )}
         </View>
