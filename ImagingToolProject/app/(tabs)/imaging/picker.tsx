@@ -242,7 +242,7 @@ export default function Picker() {
                 className="text-white font-semibold"
                 style={{ fontSize: screenWidth * 0.04 }}
               >
-                Confirm and Draw ROI
+                {isProcessing ? "Processing..." : "Confirm and Draw ROI"}
               </Text>
             </TouchableOpacity>
           </View>

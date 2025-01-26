@@ -14,6 +14,7 @@ import { shareAsync } from "expo-sharing";
 import { useState, useEffect, useRef } from "react";
 import { useEvent } from "expo";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Dimensions } from "react-native";
 
 import Animated, {
   useAnimatedStyle,
@@ -93,6 +94,9 @@ const ZoomSlider = ({ value, onValueChange }: ZoomSliderProps) => {
 
 export default function Camera() {
   const SERVER_URL = "http://192.168.1.19:8000";
+
+  const screenWidth = Dimensions.get("window").width;
+  const screenHeight = Dimensions.get("window").height;
 
   let cameraRef = useRef<CameraView>(null);
   const [facing, setFacing] = useState<"front" | "back">("front");
@@ -365,11 +369,38 @@ export default function Camera() {
     return (
       <SafeAreaView className="flex-1">
         <VideoView
-          style={{ flex: 1 }}
+          style={{ flex: 1, width: screenWidth, height: screenHeight }}
           player={player}
           allowsFullscreen
           allowsPictureInPicture
         />
+
+        <View className="" style={{ padding: screenWidth * 0.04 }}>
+          <TouchableOpacity
+            onPress={processVideo}
+            disabled={isProcessing}
+            className="items-center bg-[#001e57] rounded-lg p-5 shadow-lg"
+          >
+            <Text
+              className="text-white font-semibold"
+              style={{ fontSize: screenWidth * 0.04 }}
+            >
+              {isProcessing ? "Processing..." : "Confirm and Draw ROI"}
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={shareVideo}
+            className="items-center bg-gray-400 rounded-lg p-5 shadow-lg mt-2"
+          >
+            <Text
+              className="text-white font-semibold"
+              style={{ fontSize: screenWidth * 0.04 }}
+            >
+              Share Video
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {/* <Button
           title={isPlaying ? "Pause" : "Play"}
@@ -382,7 +413,7 @@ export default function Camera() {
           }}
         /> */}
 
-        <Button title="Share" onPress={shareVideo} />
+        {/* <Button title="Share" onPress={shareVideo} /> */}
 
         {/* {hasMediaLibPermission ? (
           <Button title="Save" onPress={saveVideo} />
@@ -390,11 +421,11 @@ export default function Camera() {
 
         {/* <Button title="Camera" onPress={recordAgain} /> */}
 
-        <Button
+        {/* <Button
           title={isProcessing ? "Processing..." : "Confirm and Draw ROI"}
           onPress={processVideo}
           disabled={isProcessing}
-        />
+        /> */}
       </SafeAreaView>
     );
   }
