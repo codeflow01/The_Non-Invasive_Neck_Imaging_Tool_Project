@@ -12,7 +12,7 @@ import { router, useNavigation } from "expo-router";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { SafeAreaView } from "react-native-safe-area-context";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import RoiTool from "../../../components/RoiTool";
+import RoiTool from "../../../hooks/useRoiTool";
 
 interface ROI {
   x: number;

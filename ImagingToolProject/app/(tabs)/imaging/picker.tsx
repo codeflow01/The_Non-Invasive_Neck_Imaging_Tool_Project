@@ -7,7 +7,7 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEvent } from "expo";
 import { useMutation } from "@tanstack/react-query";
-import { useRoiBridge } from "../../../components/RoiBridge";
+import { useRoiBridge } from "../../../hooks/useRoiBridge";
 
 interface UploadResponse {
   success: boolean;
