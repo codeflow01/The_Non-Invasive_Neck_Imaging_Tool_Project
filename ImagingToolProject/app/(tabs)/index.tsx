@@ -53,10 +53,10 @@ export default function Index() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} className="bg-gray-100">
       <ScrollView>
         <View
-          className="items-center bg-gray-100 mt-20"
+          className="items-center mt-20"
           style={{ padding: screenWidth * 0.08 }}
         >
           <View
