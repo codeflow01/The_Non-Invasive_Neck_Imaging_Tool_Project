@@ -116,7 +116,11 @@ export default function BMICalculator() {
           <TouchableOpacity
             onPress={calculateBMI}
             className="items-center bg-[#001e57] rounded-lg shadow-lg"
-            style={{ padding: screenWidth * 0.04, marginBottom: screenHeight * 0.02, marginTop: screenHeight * 0.02 }}
+            style={{
+              padding: screenWidth * 0.04,
+              marginBottom: screenHeight * 0.02,
+              marginTop: screenHeight * 0.02,
+            }}
           >
             <Text
               className="text-white font-semibold"
@@ -148,10 +152,10 @@ export default function BMICalculator() {
               >
                 {bmiCategory}
               </Text>
-              
+
               <TouchableOpacity
                 onPress={resetCalculator}
-                className="items-center bg-gray-200 rounded-lg w-full"
+                className="items-center bg-gray-200 rounded-lg w-full shadow-sm"
                 style={{ padding: screenWidth * 0.04 }}
               >
                 <Text

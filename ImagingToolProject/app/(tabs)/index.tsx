@@ -4,9 +4,12 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  Image,
+  SafeAreaView,
 } from "react-native";
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { router } from "expo-router";
 
 export default function Index() {
   const [isPressed, setIsPressed] = useState<boolean>(false);
@@ -45,20 +48,66 @@ export default function Index() {
     setIsPressed(!isPressed);
   };
 
+  const handleNavigateToImaging = () => {
+    router.push("/(tabs)/imaging");
+  };
+
   return (
-    <ScrollView contentContainerStyle={{ flex: 1 }}>
-      <View
-        className="flex-1 items-center justify-end mb-20 bg-gray-100"
-        style={{ padding: screenWidth * 0.08 }}
-      >
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView>
         <View
-          className="bg-white rounded-xl"
-          style={{
-            width: containerWidth,
-            padding: screenWidth * 0.05,
-          }}
+          className="items-center bg-gray-100 mt-20"
+          style={{ padding: screenWidth * 0.08 }}
         >
-          {/* <Text
+          <View
+            className="bg-white rounded-xl"
+            style={{
+              width: containerWidth,
+              padding: screenWidth * 0.05,
+            }}
+          >
+            <Text
+              className="font-bold text-center text-[#001e57]"
+              style={{
+                fontSize: screenWidth * 0.06,
+                marginBottom: screenHeight * 0.04,
+              }}
+            >
+              Non-Contact Diagnosis
+            </Text>
+
+            <TouchableOpacity onPress={handleNavigateToImaging}>
+              <View
+                className="flex items-center justify-center p-1.5 shadow-lg"
+                style={{ height: containerWidth * 0.9 }}
+              >
+                <Image
+                  source={require("../../assets/images/jvp.webp")}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    aspectRatio: 1,
+                    resizeMode: "contain",
+                    borderRadius: 12,
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        <View
+          className="flex-1 items-center justify-end  bg-gray-100"
+          style={{ padding: screenWidth * 0.08 }}
+        >
+          <View
+            className="bg-white rounded-xl"
+            style={{
+              width: containerWidth,
+              padding: screenWidth * 0.05,
+            }}
+          >
+            {/* <Text
             className="font-bold text-center text-[#001e57]"
             style={{
               fontSize: screenWidth * 0.06,
@@ -68,63 +117,68 @@ export default function Index() {
             Clean Server Storage
           </Text> */}
 
-          <TouchableOpacity
-            onPress={handlePress}
-            className={`items-center rounded-lg ${
-              isPressed ? "bg-gray-600" : "bg-[#001e57]"
-            }`}
-            style={{
-              padding: screenWidth * 0.04,
-              // marginBottom: screenHeight * 0.02,
-            }}
-          >
-            <Text
-              className="text-white font-semibold text-center"
+            <TouchableOpacity
+              onPress={handlePress}
+              className={`items-center rounded-lg shadow-lg ${
+                isPressed ? "bg-gray-200" : "bg-[#001e57]"
+              } ${isPressed ? "shadow-sm" : "shadow-lg"}`}
               style={{
-                fontSize: screenWidth * 0.04,
+                padding: screenWidth * 0.04,
+                // marginBottom: screenHeight * 0.02,
               }}
             >
-              {isPressed ? "Clean Again" : "Clean Up Server Storage"}
-            </Text>
-          </TouchableOpacity>
+              <Text
+                className={`font-semibold text-center ${
+                  isPressed ? "text-gray-700" : "text-white"
+                }
+              `}
+                style={{
+                  fontSize: screenWidth * 0.04,
+                }}
+              >
+                {isPressed ? "Clean Again" : "Clean Up Server Storage"}
+              </Text>
+            </TouchableOpacity>
 
-          {showResult && isLoading && (
-            <Text
-              className="text-[#001e57] text-center"
-              style={{
-                fontSize: screenWidth * 0.045,
-                marginTop: screenHeight * 0.02,
-              }}
-            >
-              Loading...
-            </Text>
-          )}
+            {showResult && isLoading && (
+              <Text
+                className="text-[#001e57] text-center"
+                style={{
+                  fontSize: screenWidth * 0.045,
+                  marginTop: screenHeight * 0.02,
+                }}
+              >
+                Loading...
+              </Text>
+            )}
 
-          {showResult && error && (
-            <Text
-              className="text-red-500 text-center"
-              style={{
-                fontSize: screenWidth * 0.045,
-                marginTop: screenHeight * 0.02,
-              }}
-            >
-              Error: {error instanceof Error ? error.message : "Unknown error"}
-            </Text>
-          )}
+            {showResult && error && (
+              <Text
+                className="text-red-500 text-center"
+                style={{
+                  fontSize: screenWidth * 0.045,
+                  marginTop: screenHeight * 0.02,
+                }}
+              >
+                Error:{" "}
+                {error instanceof Error ? error.message : "Unknown error"}
+              </Text>
+            )}
 
-          {showResult && data && (
-            <Text
-              className="text-[#001e57] text-center"
-              style={{
-                fontSize: screenWidth * 0.045,
-                marginTop: screenHeight * 0.02,
-              }}
-            >
-              {data.message}
-            </Text>
-          )}
+            {showResult && data && (
+              <Text
+                className="text-gray-600 text-center"
+                style={{
+                  fontSize: screenWidth * 0.045,
+                  marginTop: screenHeight * 0.02,
+                }}
+              >
+                {data.message}
+              </Text>
+            )}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
