@@ -74,7 +74,8 @@ export default function Imaging() {
               style={{
                 height: screenHeight * 0.15,
                 justifyContent: "center",
-                paddingVertical: screenHeight * 0.02, marginBottom: screenHeight * 0.02
+                paddingVertical: screenHeight * 0.02,
+                marginBottom: screenHeight * 0.02,
               }}
             >
               <FontAwesome5

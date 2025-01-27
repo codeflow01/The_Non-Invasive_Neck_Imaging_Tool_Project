@@ -95,7 +95,8 @@ const ZoomSlider = ({ value, onValueChange }: ZoomSliderProps) => {
 };
 
 export default function Camera() {
-  const SERVER_URL = "http://192.168.1.19:8000";
+  // const SERVER_URL = "http://192.168.1.19:8000";
+  const SERVER_URL = "http://172.23.117.43:8000";
 
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;

@@ -27,10 +27,9 @@ export default function Insight() {
   const [modalVisible, setModalVisible] = useState(false);
   const [imageModalVisible, setImageModalVisible] = useState(false);
 
-  // VIC
-  const SERVER_URL = "http://192.168.1.19:8000";
+  // const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
-  // const SERVER_URL = "http://172.23.23.251:8000";
+  const SERVER_URL = "http://172.23.117.43:8000";
 
   const displacementPlotsUrl = params.displacementPlotsUrl;
   const regCsvUrl = params.regCsvUrl;

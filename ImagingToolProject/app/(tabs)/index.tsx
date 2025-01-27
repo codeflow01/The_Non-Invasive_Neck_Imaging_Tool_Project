@@ -20,15 +20,14 @@ export default function Index() {
   const screenHeight = Dimensions.get("window").height;
   const containerWidth = screenWidth * 0.85;
 
+  // const SERVER_URL = "http://192.168.1.19:8000";
+  // ABI
+  const SERVER_URL = "http://172.23.117.43:8000";
+
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["cleanupMessage"],
     queryFn: async () => {
-      // ABI
-      // const response = await fetch("http://172.23.23.251:8000/api");
-      // VIC
-      const response = await fetch(
-        "http://192.168.1.19:8000/cleanup_server_storage"
-      );
+      const response = await fetch(`${SERVER_URL}/cleanup_server_storage`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
