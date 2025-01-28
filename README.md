@@ -19,14 +19,14 @@ In the server directory, create the necessary directories with the following com
 mkdir server-fastapi-frames-storage server-fastapi-roiFrames-storage server-fastapi-results-storage server-fastapi-video-storage
 ```
 
-### Create Environment File for the Server
+### Create Server Environment File
 In the server directory, create an environment file named .env and add the following environment variables:
 ```bash
 HOST = 0.0.0.0
 PORT = 8000
 ALLOWED_ORIGINS == [
         "http://localhost:8081",
-        # ABI
+        # the IP address running the frontend application
         "http://172.23.117.43:8081"
         ]
 ```
