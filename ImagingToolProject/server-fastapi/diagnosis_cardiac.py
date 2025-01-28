@@ -216,7 +216,20 @@ class DataVisualization:
             
             start_time = self.data_process_exe.avg_displacement_df["Time(s)"].min()
             end_time = self.data_process_exe.avg_displacement_df["Time(s)"].max()
-            ax2.set_xticks(np.arange(start_time, end_time + 0.1, 0.1))
+
+
+            total_duration = end_time - start_time
+
+            if total_duration > 10:
+                interval = total_duration / 10  
+            elif total_duration > 5:
+                interval = total_duration / 8   
+            else:
+                interval = total_duration / 6   
+
+            interval = round(interval, 1)
+
+            ax2.set_xticks(np.arange(start_time, end_time + 0.1, interval))
 
             ax2.set_xlabel("Time (seconds)")
             ax2.set_ylabel("Average Displacement (pixels)")
