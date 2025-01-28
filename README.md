@@ -13,6 +13,24 @@ Under the project directory, install the dependencies using npm:
 npm install
 ```
 
+### Create Server Storage Directories
+In the server directory, create the necessary directories by running the following command:
+```bash
+mkdir server-fastapi-frames-storage server-fastapi-roiFrames-storage server-fastapi-results-storage server-fastapi-video-storage
+```
+
+### Create Environment File for the Server
+In the server directory, create an environment file named .env and add the following environment variables:
+```bash
+HOST = 0.0.0.0
+PORT = 8000
+ALLOWED_ORIGINS == [
+        "http://localhost:8081",
+        # ABI
+        "http://172.23.117.43:8081"
+        ]
+```
+
 ### Starting the Frontend Application 
 After installing the dependencies, start the frontend application with the following command:
 ```bash
