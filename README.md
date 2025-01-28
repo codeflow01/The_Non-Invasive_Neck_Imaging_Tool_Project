@@ -14,7 +14,7 @@ npm install
 ```
 
 ### Create Server Storage Directories
-In the server directory, create the necessary directories by running the following command:
+In the server directory, create the necessary directories with the following command:
 ```bash
 mkdir server-fastapi-frames-storage server-fastapi-roiFrames-storage server-fastapi-results-storage server-fastapi-video-storage
 ```
@@ -51,4 +51,3 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ## Quick Start
 
 Scan the Scan the QR code displayed in the terminal. If everything is set up *correctly*, the application should open on your mobile phone.
-
