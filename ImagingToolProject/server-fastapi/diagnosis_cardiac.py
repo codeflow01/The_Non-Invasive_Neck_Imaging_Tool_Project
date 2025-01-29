@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import os
 from pathlib import Path
 from typing import List
 from multiprocessing import cpu_count
@@ -50,7 +49,7 @@ class VideoProcess:
 
         self.roi = (x, y, width, height)
     
-    def extract_frames(self, output_folder: str) -> List[np.ndarray]:
+    def extract_frames(self, output_folder: Path) -> List[np.ndarray]:
         frame_count = 0
         while True:
             ret, frame = self.cap.read()
@@ -66,7 +65,7 @@ class VideoProcess:
                     print(f"Warning: ROI dimensions ({x+w}x{y+h}) exceed frame dimensions ({frame.shape[1]}x{frame.shape[0]})")
                     continue
 
-            frame_filename = os.path.join(output_folder, f"frame_{frame_count:03d}.png")
+            frame_filename = output_folder / f"frame_{frame_count:03d}.png"
             cv2.imwrite(frame_filename, frame)
             self.frames.append(frame)
             frame_count += 1
@@ -80,9 +79,8 @@ class ImageRegistration:
         self.registration_results = []
         self.registration_locations = []
 
-    def register_frames(self, frames_dir: str):
-        frame_files = sorted([f for f in os.listdir(frames_dir) 
-                            if f.startswith("frame_") and f.endswith(".png")])
+    def register_frames(self, frames_dir: Path):
+        frame_files = sorted([f for f in frames_dir.glob("frame_*.png")])
         
         print(f"(∆π∆)\nTotal number of frames decomposed: {len(frame_files)}\n(∆π∆)")
 
@@ -90,15 +88,15 @@ class ImageRegistration:
             print("Not enough frames to perform registration. Exiting...")
             return None
 
-        reference_path = os.path.join(frames_dir, frame_files[1])
+        reference_path = frame_files[1]
         reference_frame = cv2.imread(reference_path)
 
         if reference_frame is None:
             print(f"Failed to load reference frame: {reference_path}")
             return False
 
-        for i, frame in enumerate(frame_files[1:]):
-            current_frame = cv2.imread(os.path.join(frames_dir, frame))
+        for i, frame_path in enumerate(frame_files[1:]):
+            current_frame = cv2.imread(frame_path)
 
             if current_frame is None:
                 print(f"Failed to load frame: {frame}")
@@ -159,24 +157,18 @@ class ImgRegDataProcess:
             print(f"Error calculating displacement: {e}")
             return False
 
-    def save_to_csv(self, results_dir: str, video_name: str):
+    def save_to_csv(self, results_dir: Path, video_name: str):
         try:
             if self.registration_df is None or self.avg_displacement_df is None:
                 raise ValueError("Please process displacement first")
 
-            registration_results_filename = f"cardiac_registration_results_{video_name}.csv"
-            self.registration_df.to_csv(
-                os.path.join(results_dir, registration_results_filename),
-                index=False
-            )
+            registration_results_path = results_dir / f"cardiac_registration_results_{video_name}.csv"
+            self.registration_df.to_csv(registration_results_path, index=False)
 
             self.avg_displacement_df["Time(s)"] = self.avg_displacement_df["Frame"] / self.fps
 
-            avg_displacement_results_filename = f"cardiac_avg_displacement_results_{video_name}.csv"
-            self.avg_displacement_df.to_csv(
-                os.path.join(results_dir, avg_displacement_results_filename),
-                index=False
-            )
+            avg_displacement_results_path = results_dir / f"cardiac_avg_displacement_results_{video_name}.csv"
+            self.avg_displacement_df.to_csv(avg_displacement_results_path, index=False)
 
             return True
         
@@ -189,7 +181,7 @@ class DataVisualization:
     def __init__(self, data_process_exe: ImgRegDataProcess):
         self.data_process_exe = data_process_exe
 
-    def create_plots(self, results_dir: str, video_name: str) -> bool:
+    def create_plots(self, results_dir: Path, video_name: str) -> bool:
         if self.data_process_exe.registration_df is None or self.data_process_exe.avg_displacement_df is None:
             print("No data available for plotting")
             return False
@@ -217,7 +209,6 @@ class DataVisualization:
             start_time = self.data_process_exe.avg_displacement_df["Time(s)"].min()
             end_time = self.data_process_exe.avg_displacement_df["Time(s)"].max()
 
-
             total_duration = end_time - start_time
 
             if total_duration > 10:
@@ -237,8 +228,8 @@ class DataVisualization:
             ax2.grid(True)
 
             plt.tight_layout()
-            displacement_plot_filename = f"cardiac_displacement_plots_{video_name}.png"
-            fig.savefig(os.path.join(results_dir, displacement_plot_filename))
+            plot_path = results_dir / f"cardiac_displacement_plots_{video_name}.png"
+            fig.savefig(plot_path)
             plt.close('all')
             return True
 
@@ -247,19 +238,18 @@ class DataVisualization:
             return False
     
 
-async def process_video(input_folder_path: str, frames_storage_path: str, results_storage_path: str, roi: dict=None) -> bool:
+async def process_video(input_folder_path: Path, frames_storage_path: Path, results_storage_path: Path, roi: dict=None) -> bool:
 
     try:
         print(f"(∆π∆)\nReceived ROI coordinates - x:{roi['x']}, y:{roi['y']}, width:{roi['width']}, height:{roi['height']}\n(∆π∆)")
 
-        video_files = [f for f in os.listdir(input_folder_path) 
-                      if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        video_files = list(input_folder_path.glob("*.mp4")) + list(input_folder_path.glob("*.avi")) + list(input_folder_path.glob("*.mov"))
        
         if not video_files:
             raise ValueError(f"No video files found in {input_folder_path}")
-
-        video_path = os.path.join(input_folder_path, video_files[0])
-        video_name = Path(video_files[0]).stem
+        
+        video_path = video_files[0]
+        video_name = video_path.stem
 
         video_process_exe = VideoProcess(video_path)
         video_process_exe.load_video()
@@ -300,7 +290,11 @@ async def process_video(input_folder_path: str, frames_storage_path: str, result
 
 async def analyze_video_cardiac(input_path: str, frames_path: str, results_path: str, roi: dict = None) -> bool:
     try:
-        result = await process_video(input_path, frames_path, results_path, roi)
+        input_path_obj = Path(input_path)
+        frames_path_obj = Path(frames_path)
+        results_path_obj = Path(results_path)
+
+        result = await process_video(input_path_obj, frames_path_obj, results_path_obj, roi)
         return result
     except Exception as e:
         print(f"Error in video cardiac analyze: {e}")
