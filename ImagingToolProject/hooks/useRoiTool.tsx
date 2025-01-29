@@ -222,9 +222,9 @@ export default function RoiTool({
         <View className="bg-black/50 px-4 py-2 rounded-lg">
           <Text className="text-white text-base">
             {completedRoi
-              ? `Selected ROI: ${Math.round(roi.width)}×${Math.round(
+              ? `Selected ROI: ${Math.round(roi.width)}x${Math.round(
                   roi.height
-                )} px`
+                )}px`
               : "Draw a rectangle for ROI"}
           </Text>
         </View>

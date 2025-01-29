@@ -1,13 +1,12 @@
 from fastapi import FastAPI, APIRouter, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
-from diagnosis_cardiac import analyze_video_cardiac
-from fastapi.staticfiles import StaticFiles
 import os
-import shutil
 from pathlib import Path
+from fastapi.staticfiles import StaticFiles
 from dotenv import load_dotenv
 import cv2
+from diagnosis_cardiac import analyze_video_cardiac
 from utils import cleanup_directory
 
 
@@ -20,6 +19,7 @@ ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:8081").split(",
 app = FastAPI()
 router = APIRouter()
 
+
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
@@ -31,12 +31,12 @@ app.add_middleware(
 
 
 # current directory and storage paths
-current_dir = os.path.dirname(os.path.abspath(__file__))
+current_dir = Path(__file__).parent
 
-roi_frames_storage = os.path.join(current_dir, "server-fastapi-roiFrames-storage")
-frames_storage = os.path.join(current_dir, "server-fastapi-frames-storage")
-results_storage = os.path.join(current_dir, "server-fastapi-results-storage")
-video_storage = os.path.join(current_dir, "server-fastapi-video-storage")
+roi_frames_storage = current_dir / "server-fastapi-roiFrames-storage"
+frames_storage = current_dir / "server-fastapi-frames-storage"
+results_storage = current_dir / "server-fastapi-results-storage"
+video_storage = current_dir / "server-fastapi-video-storage"
 
 
 # static file serving
@@ -58,10 +58,9 @@ async def upload_video(video: UploadFile = File(...)):
         cleanup_directory(frames_storage)
         cleanup_directory(video_storage)
 
-        file_path = os.path.join(video_storage, video.filename)
+        file_path = video_storage / video.filename
         
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(video.file, buffer)
+        file_path.write_bytes(video.file.read())
         
         return {
             "success": True,
@@ -80,13 +79,12 @@ async def upload_video(video: UploadFile = File(...)):
 @router.get("/video/roi-frame")
 async def get_roi_frame():
     try:
-        video_files = [f for f in os.listdir(video_storage) 
-                      if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        video_files = list(video_storage.glob('*.mp4')) + list(video_storage.glob('*.avi')) + list(video_storage.glob('*.mov'))
         if not video_files:
             return {"success": False, "message": "No video files found"}
             
-        video_path = os.path.join(video_storage, video_files[-1])
-        video_filename = Path(video_files[-1]).stem
+        video_path = video_files[-1]
+        video_filename = video_path.stem
         
         cap = cv2.VideoCapture(video_path)
 
@@ -99,7 +97,7 @@ async def get_roi_frame():
         
         if ret:
             roi_frame_name = f"roi_frame_{video_filename}.png"
-            frame_path = os.path.join(roi_frames_storage, roi_frame_name)
+            frame_path = roi_frames_storage / roi_frame_name
             cv2.imwrite(frame_path, frame)
             return {
                 "success": True,
@@ -122,15 +120,15 @@ async def get_roi_frame():
 async def diagnose_cardiac(roi:dict):
     try:
         
-        if not os.path.exists(video_storage):
+        if not video_storage.exists():
             raise ValueError(f"Video storage directory does not exist: {video_storage}")
    
-        video_files = [f for f in os.listdir(video_storage) if f.lower().endswith(('.mp4', '.avi', '.mov'))]
+        video_files = list(video_storage.glob('*.mp4')) + list(video_storage.glob('*.avi')) + list(video_storage.glob('*.mov'))
 
         if not video_files:
             return {"success": False, "message": "No video files found"}
             
-        video_name = Path(video_files[0]).stem
+        video_name = video_files[0].stem
         
         success = await analyze_video_cardiac(
             input_path=video_storage,
@@ -146,7 +144,7 @@ async def diagnose_cardiac(roi:dict):
             avg_csv = f"cardiac_avg_displacement_results_{video_name}.csv"
 
             # log path
-            plot_path = os.path.join(results_storage, displacement_plots)
+            plot_path = results_storage / displacement_plots
             print(f"(∆π∆) Plot path exists: {os.path.exists(plot_path)}")
             print(f"(∆π∆) Full plot URL: /server-fastapi-results-storage/{displacement_plots}")
 
