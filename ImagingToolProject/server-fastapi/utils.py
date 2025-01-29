@@ -5,7 +5,7 @@ def cleanup_directory(directory_path):
     if directory_path.exists():
         for file_path in directory_path.iterdir():
             try:
-                if file_path.isfile():
+                if file_path.is_file():
                     file_path.unlink()
             except Exception as e:
                 print(f"Error deleting {file_path}: {e}")

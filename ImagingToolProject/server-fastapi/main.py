@@ -145,7 +145,7 @@ async def diagnose_cardiac(roi:dict):
 
             # log path
             plot_path = results_storage / displacement_plots
-            print(f"(∆π∆) Plot path exists: {os.path.exists(plot_path)}")
+            print(f"(∆π∆) Plot path exists: {plot_path.exists()}")
             print(f"(∆π∆) Full plot URL: /server-fastapi-results-storage/{displacement_plots}")
 
             return {
