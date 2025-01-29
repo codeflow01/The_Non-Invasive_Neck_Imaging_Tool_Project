@@ -1,12 +1,12 @@
-import os
+from pathlib import Path
 
 def cleanup_directory(directory_path):
-    if os.path.exists(directory_path):
-        for filename in os.listdir(directory_path):
-            file_path = os.path.join(directory_path, filename)
+    directory_path = Path(directory_path)
+    if directory_path.exists():
+        for file_path in directory_path.iterdir():
             try:
-                if os.path.isfile(file_path):
-                    os.unlink(file_path)
+                if file_path.isfile():
+                    file_path.unlink()
             except Exception as e:
                 print(f"Error deleting {file_path}: {e}")
                 
