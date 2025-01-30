@@ -22,7 +22,7 @@ export default function Index() {
 
   // const SERVER_URL = "http://192.168.1.19:8000";
   // ABI
-  const SERVER_URL = "http://172.23.117.43:8000";
+  const SERVER_URL = "http://172.23.111.151:8000";
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["cleanupMessage"],
