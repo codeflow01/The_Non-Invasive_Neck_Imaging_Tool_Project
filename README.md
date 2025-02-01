@@ -1,8 +1,6 @@
 # The Non-invasive Cardiac Diagnosis Mobile Application 
 <!-- <span>&nbsp;&#128249;<span> -->
-<img alt="Python" src="https://img.shields.io/badge/Python-3.12-4630EB?style=flat-square&labelColor=000000" />
-<img alt="Typescript" src="https://img.shields.io/badge/TypeScript-5.3-4630EB?style=flat-square&labelColor=000000" />
-<img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=Expo%20SDK&labelColor=000000&color=4630EB" />
+<img alt="Python" src="https://img.shields.io/badge/Python-3.12-4630EB?style=flat-square&labelColor=000000" /> <img alt="Typescript" src="https://img.shields.io/badge/TypeScript-5.3-4630EB?style=flat-square&labelColor=000000" /> <img alt="Expo SDK version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=Expo%20SDK&labelColor=000000&color=4630EB" />
 
 ## Installation
 
@@ -52,7 +50,7 @@ After installing the dependencies, start the frontend application with the follo
 ```bash
 npx expo start
 ```
-> Note: look for the IP address shown in your terminal. It should look like this: `exp://...`. Change the IP address in the following files: `app/(tabs)/imaging/camera.tsx`,`app/(tabs)/imaging/picker.tsx`, `app/(tabs)/imaging/roi.tsx`,`app/(tabs)/index.tsx`,`app/(tabs)/insight.tsx` 
+> Note: Look for the IP address shown in your terminal. It should look like this: `exp://...`. Change the `SERVER_URL` in the following files: `app/(tabs)/imaging/camera.tsx`,`app/(tabs)/imaging/picker.tsx`, `app/(tabs)/imaging/roi.tsx`,`app/(tabs)/index.tsx`,`app/(tabs)/insight.tsx` 
 
 ### Starting the Server Application
 In the server directory, start the server application with the following command:<br><br>
