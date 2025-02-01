@@ -49,9 +49,7 @@ export default function Picker() {
   const screenWidth = Dimensions.get("window").width;
   const screenHeight = Dimensions.get("window").height;
 
-  // const SERVER_URL = "http://192.168.1.19:8000";
-  // ABI
-  const SERVER_URL = "http://172.23.111.151:8000";
+  const SERVER_URL = "http://192.168.1.19:8000";
 
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
   // const [isProcessing, setIsProcessing] = useState<boolean>(false);

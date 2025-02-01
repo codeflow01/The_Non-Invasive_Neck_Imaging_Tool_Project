@@ -54,9 +54,7 @@ export default function Roi() {
   const navigation = useNavigation();
   const [containerHeight, setContainerHeight] = useState(0);
 
-  // const SERVER_URL = "http://192.168.1.19:8000";
-  // ABI
-  const SERVER_URL = "http://172.23.111.151:8000";
+  const SERVER_URL = "http://192.168.1.19:8000";
 
   const handleLayout = (event: LayoutChangeEvent) => {
     const { height } = event.nativeEvent.layout;
