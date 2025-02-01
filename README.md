@@ -43,6 +43,13 @@ Step 1: Activating the Python virtual environment
 ```bash
 source venv/bin/activate
 ```
+
+remove the 
+
+```bash
+venv/Scripts/activate
+```
+
 Step 2: Running the FastAPI server
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
@@ -51,3 +58,10 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ## Quick Start
 
 Scan the Scan the QR code displayed in the terminal. If everything is set up *correctly*, the application should open on your mobile phone.
+
+
+others need to be added:
+
+1. ip address
+2. opencv version / requirements.txt
+3. create .env for frontend
