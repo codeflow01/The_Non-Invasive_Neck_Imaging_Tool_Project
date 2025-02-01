@@ -133,7 +133,7 @@ export default function Index() {
                   fontSize: screenWidth * 0.04,
                 }}
               >
-                {isPressed ? "Clean Again" : "Clean Up Server Storage"}
+                {isPressed ? "Clean Again" : "Clean Up Storage"}
               </Text>
             </TouchableOpacity>
 
