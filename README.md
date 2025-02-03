@@ -73,7 +73,7 @@ Remove-Item -Path "venv" -Recurse -Force
 ```
 Step 2: Create a new virtual environment:
 ```bash
-python -m venv venv
+py -3.12 -m venv venv
 ```
 Step 3: Activating the Python virtual environment
 ```bash
