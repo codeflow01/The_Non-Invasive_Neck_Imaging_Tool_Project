@@ -50,7 +50,7 @@ After installing the dependencies, start the frontend application with the follo
 ```bash
 npx expo start
 ```
-> Note: Look for the IP address shown in your terminal. It should look like this: `exp://...(except for the ":" and the last four digits)`. Change the `SERVER_URL` based on this IP address in the following files: `app/(tabs)/imaging/camera.tsx`,`app/(tabs)/imaging/picker.tsx`, `app/(tabs)/imaging/roi.tsx`,`app/(tabs)/index.tsx`,`app/(tabs)/insight.tsx` 
+> Note: Look for the IP address shown in your terminal. It should look like this: `exp://...(except the ":" and the following last four digits)`. Change the `SERVER_URL` based on this IP address in the following files: `app/(tabs)/imaging/camera.tsx`,`app/(tabs)/imaging/picker.tsx`, `app/(tabs)/imaging/roi.tsx`,`app/(tabs)/index.tsx`,`app/(tabs)/insight.tsx` 
 
 ### Starting the Server Application
 In the server directory, start the server application with the following command:<br><br>
