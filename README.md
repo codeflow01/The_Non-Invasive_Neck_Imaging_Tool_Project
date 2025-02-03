@@ -79,7 +79,7 @@ Step 3: Activating the Python virtual environment
 ```bash
 venv/Scripts/activate
 ```
-Step 4: Installing the required packages referenced in the requirements.txt in the virtual environment
+Step 4: Installing the required packages in the virtual environment
 ```bash
 pip install -r requirements.txt
 ```
