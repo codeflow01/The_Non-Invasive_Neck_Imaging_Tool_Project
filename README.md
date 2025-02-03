@@ -67,11 +67,11 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 **_For Windows Users:_**
 <br><br>
-Step 1: Remove the existing virtual environment:
+Step 1: Remove the existing virtual environment
 ```bash
 Remove-Item -Path "venv" -Recurse -Force
 ```
-Step 2: Create a new virtual environment:
+Step 2: Create a new virtual environment
 ```bash
 py -3.12 -m venv venv
 ```
@@ -79,8 +79,10 @@ Step 3: Activating the Python virtual environment
 ```bash
 venv/Scripts/activate
 ```
-Step 4: Installing the required packages referenced in the requirements.txt
-<br>
+Step 4: Installing the required packages referenced in the requirements.txt in the virtual environment
+```bash
+pip install -r requirements.txt
+```
 Step 5: Running the FastAPI server
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
