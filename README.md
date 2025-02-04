@@ -106,5 +106,5 @@ uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 npx expo start
 ```
 - Scan the QR code displayed in the terminal. If everything is set up *correctly*, the application should open on your mobile phone.
-  > Note: Do not start frontend application within the Python virtual environment.
+  >Note: Do not start frontend application within the Python virtual environment.
 
