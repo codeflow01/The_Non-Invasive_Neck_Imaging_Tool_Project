@@ -95,7 +95,7 @@ pip install -r requirements.txt
 ## Quickstart
 
 ### Starting the Server Application
-In the server directory, start the server application with the following command:
+In the server directory, under Python virtual environment, start the server application with the following command:
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
