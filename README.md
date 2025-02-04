@@ -8,13 +8,30 @@
 Ensure you have the following installed:
 - [Node.js](https://nodejs.org/en/)
 
+
+
 ### Installing Dependencies
 In the project directory, install the dependencies using npm:
 ```bash
 npm install
 ```
 
-### Create Server Storage Directories
+### Configuring Frontend Application
+1. After installing the dependencies, start the frontend application with the following command:
+```bash
+npx expo start
+```
+2. Look for the IP address shown in your terminal. It should look like this: `exp://...(except the ":" and the following last four digits)`. <br><br>
+3. Change the `SERVER_URL` based on this IP address in the following files:<br> 
+`app/(tabs)/imaging/camera.tsx`<br>
+`app/(tabs)/imaging/picker.tsx`<br>
+`app/(tabs)/imaging/roi.tsx`<br>
+`app/(tabs)/index.tsx`<br>
+`app/(tabs)/insight.tsx` 
+
+
+
+### Creating Server Storage Directories
 In the server directory, create the necessary directories with the following command:<br><br>
 **_For Mac Users:_**
 ```bash
@@ -24,7 +41,8 @@ mkdir server-fastapi-frames-storage server-fastapi-roiFrames-storage server-fast
 ```bash
 mkdir "server-fastapi-frames-storage", "server-fastapi-roiFrames-storage", "server-fastapi-results-storage", "server-fastapi-video-storage"
 ```
-### Create Server Environment File
+
+### Creating Server Environment File
 In the server directory, create an environment file named .env with the following command:<br><br>
 **_For Mac Users:_**
 ```bash
@@ -45,52 +63,48 @@ ALLOWED_ORIGINS == [
         ]
 ```
 
-### Starting the Frontend Application 
-After installing the dependencies, start the frontend application with the following command:
-```bash
-npx expo start
-```
-> Note: Look for the IP address shown in your terminal. It should look like this: `exp://...(except the ":" and the following last four digits)`. Change the `SERVER_URL` based on this IP address in the following files: `app/(tabs)/imaging/camera.tsx`,`app/(tabs)/imaging/picker.tsx`, `app/(tabs)/imaging/roi.tsx`,`app/(tabs)/index.tsx`,`app/(tabs)/insight.tsx` 
 
-### Starting the Server Application
-In the server directory, start the server application with the following command:<br><br>
+
+### Activating the Python Virtual Environment
 **_For Mac Users:_**
 <br><br>
-Step 1: Activating the Python virtual environment
+In the server directory, activating the Python virtual environment with the following command:
 ```bash
 source venv/bin/activate
 ```
-Step 2: Running the FastAPI server
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
 **_For Windows Users:_**
 <br><br>
-Step 1: Remove the existing virtual environment
+1. Remove the existing virtual environment
 ```bash
 Remove-Item -Path "venv" -Recurse -Force
 ```
-Step 2: Create a new virtual environment
+2. Create a new virtual environment
 ```bash
 py -3.12 -m venv venv
 ```
-Step 3: Activating the Python virtual environment
+3. Activating the Python virtual environment
 ```bash
 venv/Scripts/activate
 ```
-Step 4: Installing the required packages in the virtual environment
+4. Installing the required packages in the virtual environment
 ```bash
 pip install -r requirements.txt
 ```
-Step 5: Running the FastAPI server
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
-
 <br>
 
 ## Quickstart
 
-Scan the QR code displayed in the terminal. If everything is set up *correctly*, the application should open on your mobile phone.
-> Note: The QR code is displayed in the terminal after starting the frontend application via `npx expo start`.
+### Starting the Server Application
+Start the server application with the following command:
+```bash
+uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+```
+
+### Starting the Frontend Application
+- Start the frontend application with the following command:
+```bash
+npx expo start
+```
+- Scan the QR code displayed in the terminal. If everything is set up *correctly*, the application should open on your mobile phone.
+  > Note: Do not start frontend application within the Python virtual environment.
+
