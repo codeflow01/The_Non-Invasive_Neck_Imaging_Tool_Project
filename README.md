@@ -21,7 +21,7 @@ npm install
 ```bash
 npx expo start
 ```
-2. Look for the IP address shown in your terminal. It should look like this: `exp://...(except the ":" and the following last four digits)`. <br><br>
+2. Look for the IP address shown in your terminal. It should look like this: `exp://...(except the ":" and the following last four digits)`. <br>
 3. Change the `SERVER_URL` based on this IP address in the following files:<br> 
 `app/(tabs)/imaging/camera.tsx`<br>
 `app/(tabs)/imaging/picker.tsx`<br>
