@@ -95,16 +95,15 @@ pip install -r requirements.txt
 ## Quickstart
 
 ### Starting the Server Application
-Start the server application with the following command:
+In the server directory, start the server application with the following command:
 ```bash
 uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
 ### Starting the Frontend Application
-- Start the frontend application with the following command:
+- In the project directory, start the frontend application with the following command:
 ```bash
 npx expo start
 ```
 - Scan the QR code displayed in the terminal. If everything is set up *correctly*, the application should open on your mobile phone.
-  >Note: Do not start frontend application within the Python virtual environment.
-
+> Note: Do not start frontend application within the Python virtual environment.
