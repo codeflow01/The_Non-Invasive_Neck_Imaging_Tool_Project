@@ -114,7 +114,7 @@ export default function RoiTool({
     onPanResponderGrant: (event: GestureResponderEvent) => {
       const { locationX, locationY } = event.nativeEvent;
       const { x, y } = translateCoordinates(locationX, locationY);
-
+      // start drawing a new ROI
       setRoi({
         x,
         y,
@@ -131,7 +131,7 @@ export default function RoiTool({
         const currentPoint = translateCoordinates(locationX, locationY);
 
         setRoi((prev) => {
-          // the new ROI based on upload video coordinates
+          // the ROI drawed based on upload video coordinates
           const newRoi = {
             x: Math.min(prev.x, currentPoint.x),
             y: Math.min(prev.y, currentPoint.y),
@@ -192,6 +192,14 @@ export default function RoiTool({
     );
   };
 
+  const getRoiInfoText = (roi: ROI) => {
+    return {
+      title: "Selected ROI",
+      location: `Location: (${Math.round(roi.x)}, ${Math.round(roi.y)})`,
+      dimensions: `Size: ${Math.round(roi.width)}x${Math.round(roi.height)}px`,
+    };
+  };
+
   return (
     <View className="flex-1 relative bg-gray-100">
       <View
@@ -220,13 +228,23 @@ export default function RoiTool({
         style={{ marginLeft: xOffset + 102 }}
       >
         <View className="bg-black/50 px-4 py-2 rounded-lg">
-          <Text className="text-white text-base">
-            {completedRoi
-              ? `Selected ROI: ${Math.round(roi.width)}x${Math.round(
-                  roi.height
-                )}px`
-              : "Draw a rectangle for ROI"}
-          </Text>
+          {completedRoi ? (
+            <View className="items-center">
+              <Text className="text-white text-base font-semibold">
+                {getRoiInfoText(roi).title}
+              </Text>
+              <Text className="text-white text-base mt-1">
+                {getRoiInfoText(roi).location}
+              </Text>
+              <Text className="text-white text-base mt-1">
+                {getRoiInfoText(roi).dimensions}
+              </Text>
+            </View>
+          ) : (
+            <Text className="text-white text-base">
+              Draw a rectangle for ROI
+            </Text>
+          )}
         </View>
       </View>
     </View>
