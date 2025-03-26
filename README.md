@@ -10,6 +10,8 @@ This mobile application prototype serves as a proof of concept, translating ABIâ
 
 ![enter image description here](https://github.com/codeflow01/The-Non-Invasive-Neck-Imaging-Tool-Project/blob/main/screencapture.png)
 
+<br>
+
 ## Installation
 
 ### Prerequisite
