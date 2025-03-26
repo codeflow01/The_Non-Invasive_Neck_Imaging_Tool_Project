@@ -1,8 +1,14 @@
-# The Non-invasive Cardiac Diagnosis Mobile Application 
+# A Mobile Application Prototype for Non-Invasive Cardiovascular Disease Detection Using Neck Imaging
 <!-- <span>&nbsp;&#128249;<span> -->
 <img alt="Python" src="https://img.shields.io/badge/Python-3.12-4630EB?style=flat-square&labelColor=000000" /><img alt="Typescript" src="https://img.shields.io/badge/TypeScript-5.3-4630EB?style=flat-square&labelColor=000000" /><img alt="ReactNative" src="https://img.shields.io/badge/React Native-0.76-4630EB?style=flat-square&labelColor=000000" /><img alt="Expo SDK" src="https://img.shields.io/badge/Expo-52.0-4630EB?style=flat-square&labelColor=000000" /> 
 <!-- dynamic version badges -->
 <!-- img alt="Expo SDK Version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=Expo&labelColor=000000&color=4630EB" -->
+
+## Overview
+
+This mobile application prototype serves as a proof of concept, translating ABI’s non-invasive cardiac health assessment research into a practical software solution. It enables real-time cardiac assessment through non-contact detection of carotid artery pulsations. Key functionalities—including video capture or selection from pre-recorded videos, video trimming, precise region-of-interest (ROI) selection, and advanced video processing and analysis—were fully implemented. Detailed analytical outputs were provided for further research, aligning closely with the requirements of ABI researchers and clinicians. UI responsiveness issues encountered during cross-platform development were successfully resolved through targeted optimizations, ensuring a smooth, user-friendly experience on iOS devices and laying a robust foundation for future development and expansion.
+
+![enter image description here](https://github.com/codeflow01/The-Non-Invasive-Neck-Imaging-Tool-Project/blob/main/screencapture.png)
 
 ## Installation
 
