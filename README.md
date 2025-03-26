@@ -1,6 +1,6 @@
 # The Non-invasive Cardiac Diagnosis Mobile Application 
 <!-- <span>&nbsp;&#128249;<span> -->
-<img alt="Python" src="https://img.shields.io/badge/Python-3.12-4630EB?style=flat-square&labelColor=000000" /> <img alt="Typescript" src="https://img.shields.io/badge/TypeScript-5.3-4630EB?style=flat-square&labelColor=000000" /> <img alt="ReactNative" src="https://img.shields.io/badge/React Native-0.76-4630EB?style=flat-square&labelColor=000000" /> <img alt="Expo SDK" src="https://img.shields.io/badge/Expo-52.0-4630EB?style=flat-square&labelColor=000000" /> 
+<img alt="Python" src="https://img.shields.io/badge/Python-3.12-4630EB?style=flat-square&labelColor=000000" /><img alt="Typescript" src="https://img.shields.io/badge/TypeScript-5.3-4630EB?style=flat-square&labelColor=000000" /><img alt="ReactNative" src="https://img.shields.io/badge/React Native-0.76-4630EB?style=flat-square&labelColor=000000" /><img alt="Expo SDK" src="https://img.shields.io/badge/Expo-52.0-4630EB?style=flat-square&labelColor=000000" /> 
 <!-- dynamic version badges -->
 <!-- img alt="Expo SDK Version" src="https://img.shields.io/npm/v/expo.svg?style=flat-square&label=Expo&labelColor=000000&color=4630EB" -->
 
