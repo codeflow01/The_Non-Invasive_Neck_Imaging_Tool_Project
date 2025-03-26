@@ -7,7 +7,7 @@ import { VideoView, useVideoPlayer } from "expo-video";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useEvent } from "expo";
 import { useMutation } from "@tanstack/react-query";
-import { useRoiBridge } from "../../../hooks/useRoiBridge";
+import { RoiBridge } from "../../../components/roiBridge";
 
 interface UploadResponse {
   success: boolean;
@@ -151,7 +151,7 @@ export default function Picker() {
   //   },
   // });
 
-  const { handleRoiFrame, isProcessing } = useRoiBridge({
+  const { handleRoiFrame, isProcessing } = RoiBridge({
     SERVER_URL,
     videoUri: videoUri!,
     onError: (error) => alert("Error processing video. Please try again."),

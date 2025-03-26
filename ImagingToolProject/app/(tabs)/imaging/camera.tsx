@@ -31,7 +31,7 @@ import {
   GestureDetector,
 } from "react-native-gesture-handler";
 
-import { useRoiBridge } from "../../../hooks/useRoiBridge";
+import { RoiBridge } from "../../../components/roiBridge";
 
 import { Button, Text, TouchableOpacity, View } from "react-native";
 import * as FileSystem from "expo-file-system";
@@ -126,7 +126,7 @@ export default function Camera() {
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [videoUri, setVideoUri] = useState<string | undefined>(undefined);
 
-  const { handleRoiFrame, isProcessing } = useRoiBridge({
+  const { handleRoiFrame, isProcessing } = RoiBridge({
     SERVER_URL,
     videoUri: videoUri || "",
     onError: (error) => {

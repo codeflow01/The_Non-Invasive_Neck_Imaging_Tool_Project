@@ -21,7 +21,7 @@ export interface RoiBridgeProps {
   onError: (error: Error) => void;
 }
 
-export const useRoiBridge = ({
+export const RoiBridge = ({
   SERVER_URL,
   videoUri,
   onError,
