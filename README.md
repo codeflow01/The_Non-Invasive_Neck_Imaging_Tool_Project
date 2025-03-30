@@ -14,6 +14,8 @@ Key functionalities—including video capture or selection from pre-recorded vid
 
 The prototype was developed with a FastAPI backend, featuring a Python-based video processing and analysis pipeline, and a React Native frontend built using the Expo toolchain. It also leveraged relevant React Native technologies, including the Gesture Responder System, Gesture Handler, and Reanimated. UI responsiveness issues encountered during cross-platform development were resolved through targeted optimizations, ensuring a smooth, user-friendly experience on iOS devices and laying a solid foundation for future development and expansion.
 
+<br>
+
 ![enter image description here](https://github.com/codeflow01/The-Non-Invasive-Neck-Imaging-Tool-Project/blob/main/screencapture.png)
 
 <br>
