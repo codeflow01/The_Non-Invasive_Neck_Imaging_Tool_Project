@@ -15,7 +15,13 @@ The prototype was developed with a FastAPI backend, featuring a Python-based vid
 
 <br>
 
-![enter image description here](https://github.com/codeflow01/The-Non-Invasive-Neck-Imaging-Tool-Project/blob/main/image-1.png)
+![screencaptures](https://github.com/codeflow01/The-Non-Invasive-Neck-Imaging-Tool-Project/blob/main/image-1.png)
+
+<br>
+
+## Architecture
+
+![architecture](https://github.com/codeflow01/The_Non-Invasive_Neck_Imaging_Tool_Project/blob/main/image-2.png)
 
 <br>
 
